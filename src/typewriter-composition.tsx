@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useCurrentFrame, useVideoConfig } from "remotion";
 import ReactMarkdown from "react-markdown";
-import { Prism } from "react-syntax-highlighter";
+import { Prism, createElement } from "react-syntax-highlighter";
 import { xonokai } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { Cursor } from "react-simple-typewriter";
 
@@ -43,6 +43,10 @@ export const TypewriterComposition = () => {
           language={match[1]}
           PreTag="div"
           {...props}
+          renderer={(props) => (<>
+            {props.rows.map(node => createElement({ node, stylesheet: props.stylesheet, useInlineStyles: props.useInlineStyles, key: undefined }))}
+            <Cursor />
+          </>)}
         />
       ) : (
         <code className={className} {...props}>

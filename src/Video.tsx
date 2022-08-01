@@ -7,7 +7,7 @@ export const RemotionVideo: React.FC = () => {
 			<Composition
 				id="MyComp"
 				component={TypewriterComposition}
-				durationInFrames={240}
+				durationInFrames={480}
 				fps={20}
 				width={1280}
 				height={720}
