@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useCurrentFrame, useVideoConfig } from "remotion";
 import ReactMarkdown from "react-markdown";
 import { Prism, createElement } from "react-syntax-highlighter";
@@ -30,8 +30,20 @@ const char_per_frame = 1;
 export const TypewriterComposition = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const [offset, setOffset] = useState(0);
 
-  const typedText = sourceText.substring(0, frame);
+
+  useEffect(() => {
+    if (sourceText.charAt(frame + offset) === '\n') {
+      let i = 1;
+      while ((frame + offset + i) < sourceText.length && sourceText.charAt(frame + offset + i).trim() === "") {
+        i += 1;
+      }
+      setOffset(offset + i);
+    }
+  }, [frame]);
+
+  const typedText = sourceText.substring(0, frame + offset).concat('|');
 
   return <ReactMarkdown children={`~~~dart\n${typedText}\n~~~`} components={{
     code({ node, inline, className, children, ...props }) {
@@ -43,10 +55,7 @@ export const TypewriterComposition = () => {
           language={match[1]}
           PreTag="div"
           {...props}
-          renderer={(props) => (<>
-            {props.rows.map(node => createElement({ node, stylesheet: props.stylesheet, useInlineStyles: props.useInlineStyles, key: undefined }))}
-            <Cursor />
-          </>)}
+
         />
       ) : (
         <code className={className} {...props}>
@@ -56,3 +65,10 @@ export const TypewriterComposition = () => {
     }
   }} />;
 };
+/*
+          renderer={(props) => (<>
+            {props.rows.map(node => createElement({ node, stylesheet: props.stylesheet, useInlineStyles: props.useInlineStyles, key: undefined }))}
+            <Cursor />
+          </>)}
+
+          */
