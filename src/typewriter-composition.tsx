@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useCurrentFrame, useVideoConfig } from "remotion";
 import ReactMarkdown from "react-markdown";
 import { Prism, createElement } from "react-syntax-highlighter";
-import { xonokai } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { xonokai } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Cursor } from "react-simple-typewriter";
 
 const sourceText = `
@@ -25,13 +25,15 @@ class MyApp extends StatelessWidget {
   }
 }
 `;
+
+
 const char_per_frame = 1;
+const NUM_LINES = 30;
 
 export const TypewriterComposition = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
   const [offset, setOffset] = useState(0);
-
 
   useEffect(() => {
     if (sourceText.charAt(frame + offset) === '\n') {
@@ -45,15 +47,22 @@ export const TypewriterComposition = () => {
 
   const typedText = sourceText.substring(0, frame + offset).concat('|');
 
-  return <ReactMarkdown children={`~~~dart\n${typedText}\n~~~`} components={{
+  return <div style={{
+    width,
+    height,
+    background: xonokai["pre[class*=\"language-\"]"].background,
+  }}><ReactMarkdown children={`~~~dart\n${typedText}\n~~~`} components={{
     code({ node, inline, className, children, ...props }) {
       const match = /language-(\w+)/.exec(className || '')
       return !inline && match ? (
         <Prism
           children={String(children).replace(/\n$/, '')}
           style={xonokai}
+          customStyle={{
+            "border": "none",
+            "background": "none"
+          }}
           language={match[1]}
-          PreTag="div"
           {...props}
 
         />
@@ -63,7 +72,8 @@ export const TypewriterComposition = () => {
         </code>
       )
     }
-  }} />;
+  }} />
+  </div>;
 };
 /*
           renderer={(props) => (<>
