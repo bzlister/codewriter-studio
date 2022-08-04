@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useCurrentFrame, useVideoConfig } from "remotion";
-import ReactMarkdown from "react-markdown";
-import { Prism, createElement } from "react-syntax-highlighter";
-import { xonokai } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Cursor } from "react-simple-typewriter";
+import React, {useEffect, useRef, useState} from 'react';
+import {useCurrentFrame, useVideoConfig} from 'remotion';
+import ReactMarkdown from 'react-markdown';
+import {Prism, createElement} from 'react-syntax-highlighter';
+import {xonokai} from 'react-syntax-highlighter/dist/esm/styles/prism';
+import {Cursor} from 'react-simple-typewriter';
 
-const sourceText = `
-class MyApp extends StatelessWidget {
+const sourceText = `class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
@@ -23,57 +22,56 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-}
-`;
-
+}`;
 
 const char_per_frame = 1;
-const NUM_LINES = 30;
 
 export const TypewriterComposition = () => {
-  const frame = useCurrentFrame();
-  const { fps, width, height } = useVideoConfig();
-  const [offset, setOffset] = useState(0);
+	const frame = useCurrentFrame();
+	const {durationInFrames, width, height} = useVideoConfig();
+	const [offset, setOffset] = useState(0);
+	const absements = useRef(Array(durationInFrames).fill(undefined));
 
-  useEffect(() => {
-    if (sourceText.charAt(frame + offset) === '\n') {
-      let i = 1;
-      while ((frame + offset + i) < sourceText.length && sourceText.charAt(frame + offset + i).trim() === "") {
-        i += 1;
-      }
-      setOffset(offset + i);
-    }
-  }, [frame]);
+	const end = absements.current[frame] ?? frame + offset;
+	if (absements.current[frame] === undefined) {
+		if (sourceText.charAt(end) === '\n') {
+			let i = 0;
+			while (
+				end + i < sourceText.length &&
+				sourceText.substring(0, end).trim() ===
+					sourceText.substring(0, end + i).trim()
+			) {
+				i += 1;
+			}
+			setOffset(offset + i);
+		} else {
+			absements.current[frame] = frame + offset;
+		}
+	}
 
-  const typedText = sourceText.substring(0, frame + offset).concat('|');
+	const typedText = sourceText
+		.substring(0, absements.current[frame] ?? frame + offset)
+		.concat('|');
 
-  return <div style={{
-    width,
-    height,
-    background: xonokai["pre[class*=\"language-\"]"].background,
-  }}><ReactMarkdown children={`~~~dart\n${typedText}\n~~~`} components={{
-    code({ node, inline, className, children, ...props }) {
-      const match = /language-(\w+)/.exec(className || '')
-      return !inline && match ? (
-        <Prism
-          children={String(children).replace(/\n$/, '')}
-          style={xonokai}
-          customStyle={{
-            "border": "none",
-            "background": "none"
-          }}
-          language={match[1]}
-          {...props}
-
-        />
-      ) : (
-        <code className={className} {...props}>
-          {children}
-        </code>
-      )
-    }
-  }} />
-  </div>;
+	return (
+		<div
+			style={{
+				width,
+				height,
+				background: xonokai['pre[class*="language-"]'].background,
+			}}
+		>
+			<Prism
+				children={typedText}
+				style={xonokai}
+				customStyle={{
+					border: 'none',
+					background: 'none',
+				}}
+				language={'dart'}
+			/>
+		</div>
+	);
 };
 /*
           renderer={(props) => (<>
