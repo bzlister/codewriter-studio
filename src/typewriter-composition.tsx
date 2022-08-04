@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {useCurrentFrame, useVideoConfig} from 'remotion';
 import ReactMarkdown from 'react-markdown';
 import {Prism, createElement} from 'react-syntax-highlighter';
@@ -26,32 +26,37 @@ const sourceText = `class MyApp extends StatelessWidget {
 
 const char_per_frame = 1;
 
-export const TypewriterComposition = () => {
+const useType = (text: string) => {
 	const frame = useCurrentFrame();
-	const {durationInFrames, width, height} = useVideoConfig();
-	const [offset, setOffset] = useState(0);
-	const absements = useRef(Array(durationInFrames).fill(undefined));
+	const {durationInFrames} = useVideoConfig();
 
-	const end = absements.current[frame] ?? frame + offset;
-	if (absements.current[frame] === undefined) {
-		if (sourceText.charAt(end) === '\n') {
-			let i = 0;
-			while (
-				end + i < sourceText.length &&
-				sourceText.substring(0, end).trim() ===
-					sourceText.substring(0, end + i).trim()
-			) {
-				i += 1;
+	const offsets = useMemo(() => {
+		const _offsets = Array<number>(durationInFrames).fill(0);
+		for (let f = 1; f < durationInFrames; f++) {
+			const start = f + _offsets[f - 1];
+			if (text.charAt(start) === '\n') {
+				let w = 0;
+				while (
+					start + w < text.length &&
+					text.charAt(start + w).trim().length === 0
+				) {
+					w += 1;
+				}
+				_offsets[f] = _offsets[f - 1] + w;
+			} else {
+				_offsets[f] = _offsets[f - 1];
 			}
-			setOffset(offset + i);
-		} else {
-			absements.current[frame] = frame + offset;
 		}
-	}
 
-	const typedText = sourceText
-		.substring(0, absements.current[frame] ?? frame + offset)
-		.concat('|');
+		return _offsets;
+	}, [durationInFrames]);
+
+	return text.substring(0, frame + offsets[frame]);
+};
+
+export const TypewriterComposition = () => {
+	const typedText = useType(sourceText).concat('|');
+	const {width, height} = useVideoConfig();
 
 	return (
 		<div
