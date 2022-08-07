@@ -29,12 +29,13 @@ export const RemotionVideo: React.FC = () => {
 					TypewriterComposition({
 						code: text,
 						language: 'dart',
+						charsPerSecond: 15,
 						theme: xonokai,
 						cursorColor: 'rgba(255, 255, 255, 255)',
 					})
 				}
-				durationInFrames={480}
-				fps={15}
+				durationInFrames={2000}
+				fps={60}
 				width={1280}
 				height={720}
 			/>

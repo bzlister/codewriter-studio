@@ -6,16 +6,21 @@ import './typewriter.css';
 
 interface TypewriterCompositionProps {
 	code: string;
+	charsPerSecond: number;
 	language: string;
 	theme: {[key: string]: React.CSSProperties};
 	cursorColor: `rgba(${number}, ${number}, ${number}, ${number})`;
 }
 
 export const TypewriterComposition = (props: TypewriterCompositionProps) => {
-	const {code, language, theme, cursorColor} = props;
-	const {width, height} = useVideoConfig();
+	const {code, charsPerSecond, language, theme, cursorColor} = props;
+	const {width, height, fps} = useVideoConfig();
 	const frame = useCurrentFrame();
-	const {durationInFrames} = useVideoConfig();
+
+	const current = Math.min(
+		Math.round((frame * charsPerSecond) / fps),
+		code.length
+	);
 
 	/**
 	 * Meed to pre-render entire typing animation on load, or the state representing offset
@@ -23,9 +28,9 @@ export const TypewriterComposition = (props: TypewriterCompositionProps) => {
 	 * to finish.
 	 */
 	const offsets = useMemo(() => {
-		const _offsets = Array<number>(durationInFrames).fill(0);
-		for (let f = 1; f < durationInFrames; f++) {
-			const start = f + _offsets[f - 1];
+		const _offsets = Array<number>(code.length + 1).fill(0);
+		for (let c = 1; c <= code.length; c++) {
+			const start = c + _offsets[c - 1];
 			if (code.charAt(start) === '\n') {
 				let w = 0;
 				while (
@@ -34,21 +39,19 @@ export const TypewriterComposition = (props: TypewriterCompositionProps) => {
 				) {
 					w += 1;
 				}
-				_offsets[f] = _offsets[f - 1] + w;
+				_offsets[c] = _offsets[c - 1] + w;
 			} else {
-				_offsets[f] = _offsets[f - 1];
+				_offsets[c] = _offsets[c - 1];
 			}
 		}
 
 		return _offsets;
-	}, [durationInFrames]);
+	}, [code]);
 
 	const typedText = code.substring(
 		0,
-		Math.min(frame + offsets[frame], code.length)
+		Math.min(current + offsets[current], code.length)
 	);
-
-	const done = typedText.trim().length === code.trim().length;
 
 	return (
 		<div
@@ -67,15 +70,15 @@ export const TypewriterComposition = (props: TypewriterCompositionProps) => {
 				}}
 				renderer={(props) => (
 					<>
-						{props.rows.map((node) =>
-							createElement({
+						{props.rows.map((node) => {
+							return createElement({
 								node,
 								stylesheet: props.stylesheet,
 								useInlineStyles: props.useInlineStyles,
-								key: '1',
-							})
-						)}
-						{done ? (
+								key: '1', // intentional,
+							});
+						})}
+						{typedText.length === code.length ? (
 							<span
 								style={{
 									color: cursorColor,
