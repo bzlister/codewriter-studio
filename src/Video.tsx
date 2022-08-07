@@ -1,6 +1,6 @@
 import {Composition} from 'remotion';
 import {TypewriterComposition} from './typewriter-composition';
-import {xonokai} from 'react-syntax-highlighter/dist/esm/styles/prism';
+import {prism} from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const text = `class MyApp extends StatelessWidget {
 	const MyApp({Key? key}) : super(key: key);
@@ -30,12 +30,13 @@ export const RemotionVideo: React.FC = () => {
 						code: text,
 						language: 'dart',
 						charsPerSecond: 15,
-						theme: xonokai,
-						cursorColor: 'rgba(255, 255, 255, 255)',
+						maxLines: 25,
+						theme: prism,
+						cursorColor: 'rgba(0, 0, 30, 255)',
 					})
 				}
 				durationInFrames={2000}
-				fps={60}
+				fps={40}
 				width={1280}
 				height={720}
 			/>

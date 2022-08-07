@@ -10,10 +10,11 @@ interface TypewriterCompositionProps {
 	language: string;
 	theme: {[key: string]: React.CSSProperties};
 	cursorColor: `rgba(${number}, ${number}, ${number}, ${number})`;
+	maxLines: number;
 }
 
 export const TypewriterComposition = (props: TypewriterCompositionProps) => {
-	const {code, charsPerSecond, language, theme, cursorColor} = props;
+	const {code, charsPerSecond, language, theme, cursorColor, maxLines} = props;
 	const {width, height, fps} = useVideoConfig();
 	const frame = useCurrentFrame();
 
@@ -21,6 +22,16 @@ export const TypewriterComposition = (props: TypewriterCompositionProps) => {
 		Math.round((frame * charsPerSecond) / fps),
 		code.length
 	);
+
+	const newLines = useMemo(() => {
+		const _newLines = Array<number>(code.split('\n').length).fill(0);
+		let last = 0;
+		for (let i = 1; i < _newLines.length; i++) {
+			_newLines[i] = code.indexOf('\n', last) + 1;
+			last = _newLines[i];
+		}
+		return _newLines;
+	}, [code]);
 
 	/**
 	 * Meed to pre-render entire typing animation on load, or the state representing offset
@@ -48,10 +59,14 @@ export const TypewriterComposition = (props: TypewriterCompositionProps) => {
 		return _offsets;
 	}, [code]);
 
-	const typedText = code.substring(
-		0,
-		Math.min(current + offsets[current], code.length)
-	);
+	const end = Math.min(current + offsets[current], code.length);
+	const currentLine =
+		end >= newLines[newLines.length - 1]
+			? newLines.length
+			: newLines.findIndex((l, i) => l >= end);
+	const startingLine = Math.max(0, currentLine - maxLines) + 1;
+
+	const typedText = code.substring(newLines[startingLine - 1], end);
 
 	return (
 		<div
@@ -68,16 +83,18 @@ export const TypewriterComposition = (props: TypewriterCompositionProps) => {
 					border: 'none',
 					background: 'none',
 				}}
+				showLineNumbers={true}
+				startingLineNumber={startingLine}
 				renderer={(props) => (
 					<>
-						{props.rows.map((node) => {
-							return createElement({
+						{props.rows.map((node, i) =>
+							createElement({
 								node,
 								stylesheet: props.stylesheet,
 								useInlineStyles: props.useInlineStyles,
-								key: '1', // intentional,
-							});
-						})}
+								key: i,
+							})
+						)}
 						{typedText.length === code.length ? (
 							<span
 								style={{
