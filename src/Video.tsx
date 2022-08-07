@@ -1,14 +1,40 @@
 import {Composition} from 'remotion';
-import { TypewriterComposition } from './typewriter-composition';
+import {TypewriterComposition} from './typewriter-composition';
+import {xonokai} from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+const text = `class MyApp extends StatelessWidget {
+	const MyApp({Key? key}) : super(key: key);
+
+	@override
+	Widget build(BuildContext context) {
+		return MaterialApp(
+			theme: ThemeData(
+				primarySwatch: Colors.blue,
+			),
+			home: Scaffold(
+				appBar: AppBar(
+					title: const Text('Firebase auth tutorial'),
+				),
+				body: const LoaderOverlay(child: AuthenticationWrapper()),
+			),
+		);
+	}
+}`;
 export const RemotionVideo: React.FC = () => {
 	return (
 		<>
 			<Composition
 				id="MyComp"
-				component={TypewriterComposition}
+				component={() =>
+					TypewriterComposition({
+						code: text,
+						language: 'dart',
+						theme: xonokai,
+						cursorColor: 'rgba(255, 255, 255, 255)',
+					})
+				}
 				durationInFrames={480}
-				fps={20}
+				fps={15}
 				width={1280}
 				height={720}
 			/>

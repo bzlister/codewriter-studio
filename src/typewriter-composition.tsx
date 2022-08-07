@@ -1,44 +1,36 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useMemo} from 'react';
 import {useCurrentFrame, useVideoConfig} from 'remotion';
-import ReactMarkdown from 'react-markdown';
-import {Prism, createElement} from 'react-syntax-highlighter';
-import {xonokai} from 'react-syntax-highlighter/dist/esm/styles/prism';
+import {createElement, Prism} from 'react-syntax-highlighter';
 import {Cursor} from 'react-simple-typewriter';
+import './typewriter.css';
 
-const sourceText = `class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+interface TypewriterCompositionProps {
+	code: string;
+	language: string;
+	theme: {[key: string]: React.CSSProperties};
+	cursorColor: `rgba(${number}, ${number}, ${number}, ${number})`;
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Firebase auth tutorial'),
-        ),
-        body: const LoaderOverlay(child: AuthenticationWrapper()),
-      ),
-    );
-  }
-}`;
-
-const char_per_frame = 1;
-
-const useType = (text: string) => {
+export const TypewriterComposition = (props: TypewriterCompositionProps) => {
+	const {code, language, theme, cursorColor} = props;
+	const {width, height} = useVideoConfig();
 	const frame = useCurrentFrame();
 	const {durationInFrames} = useVideoConfig();
 
+	/**
+	 * Meed to pre-render entire typing animation on load, or the state representing offset
+	 * due to leading whitespace will desync from frame if not playing entire animation start
+	 * to finish.
+	 */
 	const offsets = useMemo(() => {
 		const _offsets = Array<number>(durationInFrames).fill(0);
 		for (let f = 1; f < durationInFrames; f++) {
 			const start = f + _offsets[f - 1];
-			if (text.charAt(start) === '\n') {
+			if (code.charAt(start) === '\n') {
 				let w = 0;
 				while (
-					start + w < text.length &&
-					text.charAt(start + w).trim().length === 0
+					start + w < code.length &&
+					code.charAt(start + w).trim().length === 0
 				) {
 					w += 1;
 				}
@@ -51,37 +43,60 @@ const useType = (text: string) => {
 		return _offsets;
 	}, [durationInFrames]);
 
-	return text.substring(0, frame + offsets[frame]);
-};
+	const typedText = code.substring(
+		0,
+		Math.min(frame + offsets[frame], code.length)
+	);
 
-export const TypewriterComposition = () => {
-	const typedText = useType(sourceText).concat('|');
-	const {width, height} = useVideoConfig();
+	const done = typedText.trim().length === code.trim().length;
 
 	return (
 		<div
 			style={{
 				width,
 				height,
-				background: xonokai['pre[class*="language-"]'].background,
+				background: theme['pre[class*="language-"]'].background,
 			}}
 		>
 			<Prism
 				children={typedText}
-				style={xonokai}
+				style={theme}
 				customStyle={{
 					border: 'none',
 					background: 'none',
 				}}
-				language={'dart'}
+				renderer={(props) => (
+					<>
+						{props.rows.map((node) =>
+							createElement({
+								node,
+								stylesheet: props.stylesheet,
+								useInlineStyles: props.useInlineStyles,
+								key: '1',
+							})
+						)}
+						{done ? (
+							<span
+								style={{
+									color: cursorColor,
+								}}
+							>
+								<Cursor />
+							</span>
+						) : (
+							<span
+								style={{
+									color: cursorColor,
+									fontSize: '16px',
+								}}
+							>
+								|
+							</span>
+						)}
+					</>
+				)}
+				language={language}
 			/>
 		</div>
 	);
 };
-/*
-          renderer={(props) => (<>
-            {props.rows.map(node => createElement({ node, stylesheet: props.stylesheet, useInlineStyles: props.useInlineStyles, key: undefined }))}
-            <Cursor />
-          </>)}
-
-          */
