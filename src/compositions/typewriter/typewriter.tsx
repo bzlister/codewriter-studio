@@ -4,18 +4,21 @@ import {createElement, Prism} from 'react-syntax-highlighter';
 import {Cursor} from 'react-simple-typewriter';
 import './typewriter.css';
 
-interface TypewriterCompositionProps {
+interface TypewriterProps {
 	code: string;
 	charsPerSecond: number;
 	language: string;
 	theme: {[key: string]: React.CSSProperties};
 	cursorColor: `rgba(${number}, ${number}, ${number}, ${number})`;
 	maxLines: number;
+	width: number;
+	height: number;
 }
 
-export const TypewriterComposition = (props: TypewriterCompositionProps) => {
-	const {code, charsPerSecond, language, theme, cursorColor, maxLines} = props;
-	const {width, height, fps} = useVideoConfig();
+export const Typewriter = (props: TypewriterProps) => {
+	const {code, charsPerSecond, language, theme, cursorColor, maxLines, width} =
+		props;
+	const {fps} = useVideoConfig();
 	const frame = useCurrentFrame();
 
 	const current = Math.min(
@@ -63,7 +66,7 @@ export const TypewriterComposition = (props: TypewriterCompositionProps) => {
 	const currentLine =
 		end >= newLines[newLines.length - 1]
 			? newLines.length
-			: newLines.findIndex((l, i) => l >= end);
+			: newLines.findIndex((l) => l >= end);
 	const startingLine = Math.max(0, currentLine - maxLines) + 1;
 
 	const typedText = code.substring(newLines[startingLine - 1], end);
@@ -72,7 +75,6 @@ export const TypewriterComposition = (props: TypewriterCompositionProps) => {
 		<div
 			style={{
 				width,
-				height,
 				background: theme['pre[class*="language-"]'].background,
 			}}
 		>
@@ -84,6 +86,7 @@ export const TypewriterComposition = (props: TypewriterCompositionProps) => {
 					background: 'none',
 				}}
 				showLineNumbers={true}
+				wrapLongLines={true}
 				startingLineNumber={startingLine}
 				renderer={(props) => (
 					<>
@@ -95,7 +98,7 @@ export const TypewriterComposition = (props: TypewriterCompositionProps) => {
 								key: i,
 							})
 						)}
-						{typedText.length === code.length ? (
+						{end === code.length ? (
 							<span
 								style={{
 									color: cursorColor,
