@@ -24,6 +24,9 @@ export const Directory = (props: DirectoryProps) => {
 				width,
 				background: theme['pre[class*="language-"]'].background,
 				padding: '5%',
+				borderWidth: '0.1em',
+				borderColor: 'black',
+				borderStyle: 'solid',
 			}}
 		>
 			<DirectoryTree {...{dir, viewing}} />

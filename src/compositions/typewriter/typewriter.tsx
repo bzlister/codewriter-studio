@@ -76,6 +76,9 @@ export const Typewriter = (props: TypewriterProps) => {
 			style={{
 				width,
 				background: theme['pre[class*="language-"]'].background,
+				borderWidth: '0.1em',
+				borderColor: 'black',
+				borderStyle: 'solid',
 			}}
 		>
 			<Prism
@@ -86,7 +89,6 @@ export const Typewriter = (props: TypewriterProps) => {
 					background: 'none',
 				}}
 				showLineNumbers={true}
-				wrapLongLines={true}
 				startingLineNumber={startingLine}
 				renderer={(props) => (
 					<>
