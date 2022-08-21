@@ -3,12 +3,13 @@ import {useCurrentFrame, useVideoConfig} from 'remotion';
 import {createElement, Prism} from 'react-syntax-highlighter';
 import {Cursor} from 'react-simple-typewriter';
 import './typewriter.css';
+import {useTypewriter} from '../../utils';
 
 interface TypewriterProps {
 	code: string;
-	charsPerSecond: number;
 	language: string;
 	theme: {[key: string]: React.CSSProperties};
+	typing: boolean;
 	cursorColor: `rgba(${number}, ${number}, ${number}, ${number})`;
 	maxLines: number;
 	width: number;
@@ -16,15 +17,9 @@ interface TypewriterProps {
 }
 
 export const Typewriter = (props: TypewriterProps) => {
-	const {code, charsPerSecond, language, theme, cursorColor, maxLines, width} =
-		props;
-	const {fps} = useVideoConfig();
-	const frame = useCurrentFrame();
+	const {code, language, theme, cursorColor, maxLines, width} = props;
 
-	const current = Math.min(
-		Math.round((frame * charsPerSecond) / fps),
-		code.length
-	);
+	const current = useTypewriter(code.length);
 
 	const newLines = useMemo(() => {
 		const _newLines = Array<number>(code.split('\n').length).fill(0);

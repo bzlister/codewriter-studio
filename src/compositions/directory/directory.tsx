@@ -1,20 +1,26 @@
 import React from 'react';
 import {useCurrentFrame, useVideoConfig} from 'remotion';
+import {useTypewriter} from '../../utils';
 
 export type Directory = {
 	name: string;
-	children: Array<string | Directory>;
+	id: string;
+	children?: Array<Directory>;
 };
 
-interface DirectoryProps {
+interface DirectoryTreeProps {
 	dir: Directory;
-	viewing?: string;
-	width: number;
-	theme: {[key: string]: React.CSSProperties};
+	opened?: string;
+	typing?: boolean;
 }
 
-export const Directory = (props: DirectoryProps) => {
-	const {dir, viewing, width, theme} = props;
+export const Directory = (
+	props: DirectoryTreeProps & {
+		width: number;
+		theme: {[key: string]: React.CSSProperties};
+	}
+) => {
+	const {dir, opened, typing, width, theme} = props;
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 
@@ -29,31 +35,60 @@ export const Directory = (props: DirectoryProps) => {
 				borderStyle: 'solid',
 			}}
 		>
-			<DirectoryTree {...{dir, viewing}} />
+			<DirectoryTree dir={dir} opened={opened} typing={typing} />
 		</div>
 	);
 };
 
 const DirectoryTree = ({
 	dir,
-	viewing,
-}: Pick<DirectoryProps, 'dir' | 'viewing'>): JSX.Element => {
+	opened,
+	typing,
+}: DirectoryTreeProps): JSX.Element => {
 	return (
 		<>
-			<div>{dir.name}</div>
-			<div
-				style={{
-					paddingLeft: '10px',
-				}}
-			>
-				{dir.children.map((child) =>
-					typeof child === 'string' ? (
-						<div>{child}</div>
-					) : (
-						<DirectoryTree dir={child} viewing={viewing} />
-					)
-				)}
-			</div>
+			{typing && !!opened && opened === dir.id ? (
+				<TypedName name={dir.name} />
+			) : (
+				<div
+					style={{
+						background:
+							!!opened && dir.id === opened
+								? 'rgba(255,255,255,150)'
+								: undefined,
+					}}
+				>
+					{dir.name}
+				</div>
+			)}
+			{!!dir.children && (
+				<div
+					style={{
+						paddingLeft: '10px',
+					}}
+				>
+					{dir.children.map((child) => (
+						<DirectoryTree dir={child} opened={opened} typing={typing} />
+					))}
+				</div>
+			)}
 		</>
+	);
+};
+
+const TypedName = ({name}: {name: string}) => {
+	const current = useTypewriter(name.length);
+	const typedText = name.substring(0, current);
+
+	return (
+		<div
+			style={{
+				borderWidth: '0.1em',
+				borderColor: 'blue',
+				borderStyle: 'solid',
+			}}
+		>
+			{typedText}
+		</div>
 	);
 };

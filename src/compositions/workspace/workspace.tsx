@@ -6,39 +6,59 @@ import {Typewriter} from '../typewriter/typewriter';
 import './workspace.css';
 import {WorkspaceConfig} from '../../../workspace.config';
 
-const pathToDir = (path: string[], segment = 0): Directory | string => {
+const getId = (path: string, level: number) => `${path}_${level}`;
+
+const pathToDir = (
+	path: string[],
+	qualified: string,
+	segment = 0
+): Directory => {
+	const id = getId(qualified, segment);
 	if (segment < path.length - 1) {
-		return {name: path[segment], children: [pathToDir(path, segment + 1)]};
+		return {
+			name: path[segment],
+			children: [pathToDir(path, qualified, segment + 1)],
+			id,
+		};
 	}
 
-	return path[segment];
+	return {name: path[segment], id};
 };
 
-export const Workspace = ({files, charsPerSecond, theme}: WorkspaceConfig) => {
+export const Workspace = ({
+	files,
+	theme,
+}: Pick<WorkspaceConfig, 'files' | 'theme'>) => {
 	const {width, height} = useVideoConfig();
 	const [currentFile, setCurrentFile] = useState(0);
 	const file = files[currentFile];
 
 	const currentPath = useMemo(() => file.path.split('/'), [file]);
 
+	const [typedLevel, setTypedLevel] = useState(0);
+
+	const [typing, setTyping] = useState<Typing>(Typing.none);
+
 	const [dir, setDir] = useState<Directory>();
 
 	useEffect(() => {
-		setDir(merge({} as Directory, dir || {}, pathToDir(currentPath)));
+		setDir(merge(dir || ({} as Directory), pathToDir(currentPath, file.path)));
+		setTypedLevel(0);
 	}, [currentPath]);
 
 	return dir ? (
 		<div className="grid-parent">
 			<Directory
 				dir={dir}
-				viewing={currentPath[currentPath.length - 1]}
 				width={300}
 				theme={theme}
+				opened={getId(file.path, typedLevel)}
+				typing={typing === Typing.directory}
 			/>
 			<Typewriter
 				code={file.content}
 				language={file.language}
-				charsPerSecond={charsPerSecond}
+				typing={typing === Typing.editor}
 				theme={theme}
 				cursorColor={'rgba(0, 0, 30, 255)'}
 				maxLines={25}
@@ -50,3 +70,9 @@ export const Workspace = ({files, charsPerSecond, theme}: WorkspaceConfig) => {
 		<div>Loading...</div>
 	);
 };
+
+enum Typing {
+	none,
+	directory,
+	editor,
+}
