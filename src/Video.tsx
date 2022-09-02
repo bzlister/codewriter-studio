@@ -16,12 +16,12 @@ const StatefulComponent = () => {
 	const {height, width} = useVideoConfig();
 	const frame = useCurrentFrame();
 
-	const odds = usePureComposition(frame, useOdd);
+	const odds = useOdd(frame);
 
 	return (
 		<div
 			style={{background: 'white', textAlign: 'center', height, width}}
-		>{`${odds} odds in ${frame}`}</div>
+		>{`${odds.props} odds in ${frame}`}</div>
 	);
 };
 
