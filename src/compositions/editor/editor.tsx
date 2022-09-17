@@ -1,25 +1,24 @@
-import React, {useMemo} from 'react';
-import {useCurrentFrame, useVideoConfig} from 'remotion';
+import React, {useEffect, useMemo} from 'react';
 import {createElement, Prism} from 'react-syntax-highlighter';
-import {Cursor} from 'react-simple-typewriter';
-import './typewriter.css';
-import {useTypewriter} from '../../utils';
+import './Editor.css';
+import { ControlStatus, useControl, useTypewriter } from '../../utils';
+import { Cursor } from 'react-simple-typewriter';
 
-interface TypewriterProps {
+interface EditorProps {
 	code: string;
 	language: string;
 	theme: {[key: string]: React.CSSProperties};
-	typing: boolean;
+	focused: boolean;
 	cursorColor: `rgba(${number}, ${number}, ${number}, ${number})`;
 	maxLines: number;
 	width: number;
-	height: number;
+	callback: () => void;
 }
 
-export const Typewriter = (props: TypewriterProps) => {
-	const {code, language, theme, cursorColor, maxLines, width} = props;
-
-	const current = useTypewriter(code.length);
+export const Editor = (props: EditorProps) => {
+	const {code, language, theme, cursorColor, maxLines, width, focused, callback} = props;
+	const frame = useControl(focused ? ControlStatus.play : ControlStatus.reset);
+	const current = useTypewriter(code.length, frame);
 
 	const newLines = useMemo(() => {
 		const _newLines = Array<number>(code.split('\n').length).fill(0);
@@ -66,6 +65,14 @@ export const Typewriter = (props: TypewriterProps) => {
 
 	const typedText = code.substring(newLines[startingLine - 1], end);
 
+	const done = focused && end === code.length;
+	useEffect(() => {
+		if (done) {
+			callback();
+		}
+	}, [done, callback]);
+
+
 	return (
 		<div
 			style={{
@@ -78,12 +85,12 @@ export const Typewriter = (props: TypewriterProps) => {
 		>
 			<Prism
 				children={typedText}
+				showLineNumbers
 				style={theme}
 				customStyle={{
 					border: 'none',
 					background: 'none',
 				}}
-				showLineNumbers={true}
 				startingLineNumber={startingLine}
 				renderer={(props) => (
 					<>

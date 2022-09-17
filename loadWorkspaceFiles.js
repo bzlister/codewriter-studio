@@ -8,7 +8,7 @@ if (args.length === 0) {
 
 const [root, displayRoot] = args;
 if (displayRoot && !root.includes(displayRoot)) {
-  throw new Error("Optionally pass name of subfolder within project directroy to be the displayed top-level directory")
+  throw new Error("Optionally pass name of subfolder within project directory to be the displayed top-level directory")
 }
 
 function extToLang(ext) {
@@ -26,7 +26,7 @@ function throughDirectory(dir, files) {
       }
       
       const displayPath = displayRoot ? absolute.substring(absolute.indexOf(displayRoot)) : absolute;
-      const extension = absolute.includes('.') ? absolute.substring(absolute.indexOf('.')+1) : undefined;
+      const extension = absolute.includes('.') ? absolute.substring(absolute.lastIndexOf('.')+1) : undefined;
       return files.push({ path: displayPath, content: fs.readFileSync(absolute).toString().trim(), language: extToLang(extension)});
   });
 
