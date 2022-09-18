@@ -1,14 +1,18 @@
 import React, {useEffect, useState, useMemo} from 'react';
 import {ControlStatus, useControl, useTypewriter} from '../../utils';
 
-type Directory = {
+type File = {
 	name: string;
-	contents: (Directory | string)[]; // Potentially make more explicit type for file names
+	typed?: boolean;
 };
 
-const pathToDir = (pathHierarchy: string[]): Directory | string =>
+type Directory = File & {
+	contents: (Directory | File)[]; // Potentially make more explicit type for file names
+};
+
+const pathToDir = (pathHierarchy: string[]): Directory | File =>
 	pathHierarchy[0].includes('.')
-		? pathHierarchy[0]
+		? {name: pathHierarchy[0]}
 		: {
 				// Potentially improve this with Regex
 				name: pathHierarchy[0],
@@ -37,6 +41,20 @@ const addPath = (directory: Directory, pathHierarchy: string[]): void => {
 	directory.contents.push(pathToDir(pathHierarchy));
 };
 
+const markAsTyped = (directory: Directory, pathHierarchy: string[]): void => {
+	const entry = directory.contents.find(
+		(child) => child.name === pathHierarchy[0]
+	);
+	if (!entry) {
+		throw new Error('Current file path not found in directory');
+	}
+
+	entry.typed = true;
+	if ((entry as Directory).contents) {
+		return markAsTyped(entry as Directory, pathHierarchy.slice(1));
+	}
+};
+
 interface FileExplorerProps {
 	currentPath: string;
 	focused: boolean;
@@ -62,9 +80,13 @@ export const FileExplorer = (props: FileExplorerProps) => {
 	const done = focused && len >= currentPath.length;
 	useEffect(() => {
 		if (done) {
+			setDirectory((oldDir) => {
+				markAsTyped(oldDir, currentPathHierarchy);
+				return oldDir;
+			});
 			callback();
 		}
-	}, [done, callback]);
+	}, [done, currentPathHierarchy, callback]);
 
 	useEffect(() => {
 		setDirectory((oldDir) => {
@@ -86,12 +108,10 @@ export const FileExplorer = (props: FileExplorerProps) => {
 		>
 			{directory.contents.map((child) => (
 				<FileSystemTree
-					key={JSON.stringify(child)}
+					key={child.name}
 					entry={child}
-					opened={{
-						pathHierarchy: currentPathHierarchy,
-						typedCharacters: focused ? len : currentPath.length,
-					}}
+					pathHierarchy={currentPathHierarchy}
+					typedCharacters={focused ? len : currentPath.length}
 				/>
 			))}
 		</div>
@@ -99,54 +119,39 @@ export const FileExplorer = (props: FileExplorerProps) => {
 };
 
 interface FileSystemTreeProps {
-	entry: Directory | string;
-	opened?: {
-		pathHierarchy: string[];
-		typedCharacters: number;
-	};
+	entry: Directory | File;
+	pathHierarchy: string[];
+	typedCharacters: number;
 }
 
 const FileSystemTree = (props: FileSystemTreeProps) => {
-	const {entry, opened} = props;
-	const {pathHierarchy, typedCharacters} = opened || {};
-	if (pathHierarchy && pathHierarchy.length === 0) {
+	const {entry, pathHierarchy, typedCharacters} = props;
+	if (pathHierarchy.length === 0) {
 		throw new Error('Invalid file system structure');
 	}
 
-	const isDir = typeof entry !== 'string';
-	const name = isDir ? entry.name : entry;
-	const withinOpened =
-		pathHierarchy &&
-		(typedCharacters || typedCharacters === 0) &&
-		name === pathHierarchy[0];
+	const isDir = Boolean((entry as Directory).contents);
+	const shouldType = !entry.typed && entry.name === pathHierarchy[0];
 
-	return withinOpened ? (
+	return (
 		<>
-			<div style={{background: 'yellow'}}>
-				{name.substring(0, Math.min(name.length, typedCharacters))}
+			<div>
+				{shouldType
+					? entry.name.substring(
+							0,
+							Math.min(entry.name.length, typedCharacters)
+					  )
+					: entry.name}
 			</div>
 			{isDir && (
 				<div style={{paddingLeft: 10}}>
-					{entry.contents.map((child) => (
+					{(entry as Directory).contents.map((child) => (
 						<FileSystemTree
-							key={JSON.stringify(child)}
+							key={child.name}
 							entry={child}
-							opened={{
-								pathHierarchy: pathHierarchy.slice(1),
-								typedCharacters: Math.max(0, typedCharacters - name.length),
-							}}
+							pathHierarchy={pathHierarchy.slice(1)}
+							typedCharacters={Math.max(0, typedCharacters - entry.name.length)}
 						/>
-					))}
-				</div>
-			)}
-		</>
-	) : (
-		<>
-			<div>{name}</div>
-			{isDir && (
-				<div style={{paddingLeft: 10}}>
-					{entry.contents.map((child) => (
-						<FileSystemTree key={JSON.stringify(child)} entry={child} />
 					))}
 				</div>
 			)}

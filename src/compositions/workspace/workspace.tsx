@@ -10,8 +10,8 @@ export const Workspace = ({
 	theme,
 }: Pick<WorkspaceConfig, 'files' | 'theme'>) => {
 	const {width} = useVideoConfig();
-	const [currentFile, setCurrentFile] = useState(0);
-	const file = files[currentFile];
+	const [currentFileIndex, setCurrentFileIndex] = useState(0);
+	const file = files[currentFileIndex];
 
 	const [focus, setFocus] = useState<Focus>(Focus.directory);
 
@@ -34,10 +34,16 @@ export const Workspace = ({
 				cursorColor="rgba(0, 0, 30, 255)"
 				maxLines={25}
 				width={width - 300}
-				callback={() => {
-					setFocus(Focus.directory);
-					setCurrentFile((f) => f + 1);
-				}}
+				callback={
+					currentFileIndex < files.length - 1
+						? () => {
+								setFocus(Focus.directory);
+								setCurrentFileIndex((i) => i + 1);
+						  }
+						: () => {
+								setFocus(Focus.none);
+						  }
+				}
 			/>
 		</div>
 	);
