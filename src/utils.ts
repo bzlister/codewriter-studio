@@ -24,8 +24,10 @@ export const useControl = (play: boolean) => {
 	const virtual = useRef(0);
 
 	if (previousFrame.current !== frame) {
-		if (play) {
+		if (status === ControlStatus.play) {
 			virtual.current += frame - previousFrame.current;
+		} else if (status === ControlStatus.reset) {
+			virtual.current = 0;
 		}
 		previousFrame.current = frame;
 	}

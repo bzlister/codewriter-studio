@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useState} from 'react';
 import {useVideoConfig} from 'remotion';
 import {Directory} from '../directory/directory';
 import {Typewriter} from '../typewriter/typewriter';
