@@ -1,28 +1,61 @@
-import React from 'react';
-import {useCurrentFrame, useVideoConfig} from 'remotion';
-import {useTypewriter} from '../../utils';
+import React, {useContext, useEffect, useState} from 'react';
+import {Context, Typing, useTypewriter} from '../../utils';
 
 export type Directory = {
 	name: string;
-	id: string;
 	children?: Array<Directory>;
 };
 
-interface DirectoryTreeProps {
-	dir: Directory;
-	opened?: string;
-	typing?: boolean;
+interface DirectoryProps {
+	currentPath: string[];
+	typing: boolean;
 }
 
-export const Directory = (
-	props: DirectoryTreeProps & {
-		width: number;
-		theme: {[key: string]: React.CSSProperties};
+const pathToDir = (path: string[], segment = 0): Directory => {
+	if (segment < path.length - 1) {
+		return {
+			name: path[segment],
+			children: [pathToDir(path, segment + 1)],
+		};
 	}
-) => {
-	const {dir, opened, typing, width, theme} = props;
-	const frame = useCurrentFrame();
-	const {fps} = useVideoConfig();
+
+	return {name: path[segment]};
+};
+
+const merge = (
+	newDir: Directory,
+	dest: Directory[],
+	parentReference: Directory
+): void => {
+	if (!dest || (newDir?.children?.length && newDir.children.length > 1)) {
+		throw new Error('Invalid merge');
+	}
+
+	const insertAt = dest.find((dir) => dir.name === newDir.name);
+	if (insertAt) {
+		if (!!insertAt.children) {
+			return merge(newDir!.children![0], insertAt.children, insertAt);
+		}
+
+		insertAt.children = [newDir!.children![0]];
+		return;
+	}
+
+	dest = [...dest, newDir];
+	parentReference.children = dest;
+	return;
+};
+
+export const Directory = (props: DirectoryProps & {width: number}) => {
+	const {currentPath, typing, width} = props;
+	const {theme} = useContext(Context);
+
+	const [dir, setDir] = useState<Directory>({name: '/', children: []});
+
+	useEffect(() => {
+		merge(pathToDir(currentPath), dir.children!, dir);
+		setDir(dir);
+	}, [currentPath]);
 
 	return (
 		<div
@@ -45,22 +78,29 @@ const DirectoryTree = ({
 	opened,
 	typing,
 }: DirectoryTreeProps): JSX.Element => {
+	const isOpened = !!opened?.includes(dir.name);
+	const isTyping = isOpened && !!typing;
+	const typed = useTypewriter(dir.name.length, isTyping);
+	const printed = isTyping ? dir.name.substring(0, typed) : dir.name;
+
+	const {setTyping} = useContext(Context);
+	const signalCompletion = !dir.children && typed === dir.name.length;
+	useEffect(() => {
+		if (signalCompletion) {
+			setTyping(Typing.editor);
+		}
+	}, [signalCompletion]);
+
 	return (
 		<>
-			{typing && !!opened && opened === dir.id ? (
-				<TypedName name={dir.name} />
-			) : (
-				<div
-					style={{
-						background:
-							!!opened && dir.id === opened
-								? 'rgba(255,255,255,150)'
-								: undefined,
-					}}
-				>
-					{dir.name}
-				</div>
-			)}
+			<div
+				style={{
+					background:
+						isOpened && !dir.children ? 'rgba(255,255,255,150)' : undefined,
+				}}
+			>
+				{printed}
+			</div>
 			{!!dir.children && (
 				<div
 					style={{
@@ -77,8 +117,17 @@ const DirectoryTree = ({
 };
 
 const TypedName = ({name}: {name: string}) => {
-	const current = useTypewriter(name.length);
+	const current = useTypewriter(name.length, true);
 	const typedText = name.substring(0, current);
+
+	const {setTyping} = useContext(Context);
+	const finished = typedText === name;
+
+	useEffect(() => {
+		if (finished) {
+			setTyping(Typing.editor);
+		}
+	}, [finished]);
 
 	return (
 		<div

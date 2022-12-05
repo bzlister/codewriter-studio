@@ -2,7 +2,6 @@ import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Composition, Sequence, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Workspace} from './compositions/workspace/workspace';
 import {defaultConfig} from '../workspace.config';
-import {ContextProvider} from './context-provider';
 
 const useOdd = (frame: number) => {
 	const oddCount = useRef(0);
@@ -29,9 +28,9 @@ export const RemotionVideo: React.FC = () => {
 	return (
 		<Composition
 			id="MyComp"
-			component={() => <StatefulComponent />}
+			component={() => <Workspace {...defaultConfig} />}
 			durationInFrames={500}
-			fps={1}
+			fps={60}
 			width={1280}
 			height={720}
 		/>

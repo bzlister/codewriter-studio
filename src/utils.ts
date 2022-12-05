@@ -1,15 +1,22 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useRef } from "react";
 import { useCurrentFrame, useVideoConfig } from "remotion"
-import { Context } from "./context-provider";
+import { WorkspaceConfig } from "../workspace.config";
 
-export const useTypewriter = (length: number) => {
-  const frame = useCurrentFrame();
-  const start = useRef(frame);
-  const {fps} = useVideoConfig();
-  const { charsPerSecond } = useContext(Context);
 
-  return Math.min(Math.round(((frame - start.current) * charsPerSecond) / fps), length);
+export enum Typing {
+	none,
+	directory,
+	editor,
 }
+
+type ContextType = Pick<WorkspaceConfig, 'charsPerSecond' | 'theme'> & {
+	setTyping: React.Dispatch<React.SetStateAction<Typing>>;
+};
+export const Context = createContext<ContextType>({
+	charsPerSecond: 0,
+	setTyping: () => {},
+	theme: {}
+});
 
 export const useControl = (play: boolean) => {
 	const frame = useCurrentFrame();
@@ -25,3 +32,12 @@ export const useControl = (play: boolean) => {
 
 	return virtual.current;
 };
+
+export const useTypewriter = (length: number, typing: boolean) => {
+  const frame = useControl(typing);
+  const start = useRef(frame);
+  const {fps} = useVideoConfig();
+  const { charsPerSecond } = useContext(Context);
+
+  return Math.min(Math.round(((frame - start.current) * charsPerSecond) / fps), length);
+}

@@ -17,9 +17,9 @@ interface TypewriterProps {
 }
 
 export const Typewriter = (props: TypewriterProps) => {
-	const {code, language, theme, cursorColor, maxLines, width} = props;
+	const {code, language, theme, cursorColor, maxLines, width, typing} = props;
 
-	const current = useTypewriter(code.length);
+	const current = useTypewriter(code.length, typing);
 
 	const newLines = useMemo(() => {
 		const _newLines = Array<number>(code.split('\n').length).fill(0);
