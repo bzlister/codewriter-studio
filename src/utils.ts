@@ -1,38 +1,28 @@
-import { createContext, useContext, useRef } from "react";
+import { createContext, useContext, useMemo, useRef, useState } from "react";
 import { useCurrentFrame, useVideoConfig } from "remotion"
 import { WorkspaceConfig } from "../workspace.config";
 
 
-export enum Typing {
-	none,
-	directory,
-	editor,
-}
-
 type ContextType = Pick<WorkspaceConfig, 'charsPerSecond' | 'theme'> & {
-	setTyping: React.Dispatch<React.SetStateAction<Typing>>;
+	setRecentlyCompleted: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
 export const Context = createContext<ContextType>({
 	charsPerSecond: 0,
-	setTyping: () => {},
+	setRecentlyCompleted: () => {},
 	theme: {}
 });
 
 export const useControl = (play: boolean) => {
 	const frame = useCurrentFrame();
-	const previousFrame = useRef<number>(frame);
-	const virtual = useRef(0);
+	const playAt = useRef(0);
 
-	if (previousFrame.current !== frame) {
-		if (status === ControlStatus.play) {
-			virtual.current += frame - previousFrame.current;
-		} else if (status === ControlStatus.reset) {
-			virtual.current = 0;
+	return useMemo(() => {
+		if (play) {
+			playAt.current += 1;
 		}
-		previousFrame.current = frame;
-	}
-
-	return virtual.current;
+		
+		return playAt.current;
+	}, [frame]);
 };
 
 export const useTypewriter = (length: number, typing: boolean) => {
@@ -42,4 +32,15 @@ export const useTypewriter = (length: number, typing: boolean) => {
   const { charsPerSecond } = useContext(Context);
 
   return Math.min(Math.round(((frame - start.current) * charsPerSecond) / fps), length);
+}
+
+export const useIter = <T>(arr: T[]): [T, () => void, boolean] => {
+	const [index, setIndex] = useState(0);
+	const next = () => {
+		if (index !== arr.length - 1) {
+			setIndex(index + 1);
+		}
+	};
+
+	return [arr[index], next, index === arr.length - 1]; 
 }

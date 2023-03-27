@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Context, Typing, useTypewriter} from '../../utils';
+import {Context, useTypewriter} from '../../utils';
 
 export type Directory = {
 	name: string;
@@ -68,26 +68,31 @@ export const Directory = (props: DirectoryProps & {width: number}) => {
 				borderStyle: 'solid',
 			}}
 		>
-			<DirectoryTree dir={dir} opened={opened} typing={typing} />
+			<DirectoryTree dir={dir} typing={typing} />
 		</div>
 	);
 };
 
+type DirectoryTreeProps = {
+	dir: Directory;
+	typing: boolean;
+	opened?: string[];
+};
 const DirectoryTree = ({
 	dir,
-	opened,
 	typing,
+	opened,
 }: DirectoryTreeProps): JSX.Element => {
 	const isOpened = !!opened?.includes(dir.name);
 	const isTyping = isOpened && !!typing;
 	const typed = useTypewriter(dir.name.length, isTyping);
 	const printed = isTyping ? dir.name.substring(0, typed) : dir.name;
 
-	const {setTyping} = useContext(Context);
+	const {setRecentlyCompleted} = useContext(Context);
 	const signalCompletion = !dir.children && typed === dir.name.length;
 	useEffect(() => {
 		if (signalCompletion) {
-			setTyping(Typing.editor);
+			setRecentlyCompleted('directory');
 		}
 	}, [signalCompletion]);
 
@@ -120,6 +125,7 @@ const TypedName = ({name}: {name: string}) => {
 	const current = useTypewriter(name.length, true);
 	const typedText = name.substring(0, current);
 
+	/*
 	const {setTyping} = useContext(Context);
 	const finished = typedText === name;
 
@@ -128,6 +134,7 @@ const TypedName = ({name}: {name: string}) => {
 			setTyping(Typing.editor);
 		}
 	}, [finished]);
+	*/
 
 	return (
 		<div

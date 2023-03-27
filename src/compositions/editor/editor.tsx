@@ -1,24 +1,22 @@
-import React, {useEffect, useMemo} from 'react';
+import React, {useContext, useEffect, useMemo} from 'react';
 import {createElement, Prism} from 'react-syntax-highlighter';
-import './Editor.css';
-import {ControlStatus, useControl, useTypewriter} from '../../utils';
+import './editor.css';
+import {Context, useControl, useTypewriter} from '../../utils';
 import {Cursor} from 'react-simple-typewriter';
 
 interface EditorProps {
 	code: string;
 	language: string;
-	theme: {[key: string]: React.CSSProperties};
-	focused: boolean;
 	cursorColor: `rgba(${number}, ${number}, ${number}, ${number})`;
 	maxLines: number;
-	width: number;
-	callback: () => void;
+	typing: boolean;
 }
 
-export const Typewriter = (props: TypewriterProps) => {
-	const {code, language, theme, cursorColor, maxLines, width, typing} = props;
-
+export const Editor = (props: EditorProps) => {
+	const {code, language, cursorColor, maxLines, typing} = props;
+	const {setRecentlyCompleted, theme} = useContext(Context);
 	const current = useTypewriter(code.length, typing);
+	console.log(`bzl ${typing} ${current}`);
 
 	const newLines = useMemo(() => {
 		const _newLines = Array<number>(code.split('\n').length).fill(0);
@@ -65,17 +63,16 @@ export const Typewriter = (props: TypewriterProps) => {
 
 	const typedText = code.substring(newLines[startingLine - 1], end);
 
-	const done = focused && end === code.length;
+	const done = typing && end === code.length;
 	useEffect(() => {
 		if (done) {
-			callback();
+			setRecentlyCompleted('editor');
 		}
-	}, [done, callback]);
+	}, [done]);
 
 	return (
 		<div
 			style={{
-				width,
 				background: theme['pre[class*="language-"]'].background,
 				borderWidth: '0.1em',
 				borderColor: 'black',
