@@ -2,6 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {WorkspaceConfig} from '../../../../workspace.config';
 import {Context, useIter} from '../../../utils';
 import {Editor} from '../../editor/editor';
+import {Header} from '../../header/header';
 
 export type StandardEditorWorkspaceProps = {
 	showFileName: boolean;
@@ -25,7 +26,7 @@ export const StandardEditorWorkspace = ({
 
 	return file ? (
 		<Context.Provider value={{charsPerSecond, setRecentlyCompleted, theme}}>
-			<div>{file.path}</div>
+			<Header fileName={file.path} />
 			<Editor
 				code={file.content}
 				language={file.language}

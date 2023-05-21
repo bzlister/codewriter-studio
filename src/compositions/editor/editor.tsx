@@ -16,7 +16,6 @@ export const Editor = (props: EditorProps) => {
 	const {code, language, cursorColor, maxLines, typing} = props;
 	const {setRecentlyCompleted, theme} = useContext(Context);
 	const current = useTypewriter(code.length, typing);
-	console.log(`bzl ${typing} ${current}`);
 
 	const newLines = useMemo(() => {
 		const _newLines = Array<number>(code.split('\n').length).fill(0);
@@ -74,9 +73,7 @@ export const Editor = (props: EditorProps) => {
 		<div
 			style={{
 				background: theme['pre[class*="language-"]'].background,
-				borderWidth: '0.1em',
-				borderColor: 'black',
-				borderStyle: 'solid',
+				flex: 'auto',
 			}}
 		>
 			<Prism

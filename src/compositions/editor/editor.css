@@ -3,6 +3,6 @@ span[class*='styles-module_blinkingCursor'] {
   font-size:  16px;
 }
 
-span[className='linenumber react-syntax-highlighter-line-number'] {
-  min-width: 2.25em !important
+span[class*='linenumber'] {
+  min-width: 2.25em !important;
 }
