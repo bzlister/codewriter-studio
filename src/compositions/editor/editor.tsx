@@ -72,7 +72,8 @@ export const Editor = (props: EditorProps) => {
 	return (
 		<div
 			style={{
-				background: theme['pre[class*="language-"]'].background,
+				...theme.common,
+				...theme.editor,
 				flex: 'auto',
 			}}
 		>

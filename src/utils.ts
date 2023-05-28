@@ -9,7 +9,11 @@ type ContextType = Pick<WorkspaceConfig, 'charsPerSecond' | 'theme'> & {
 export const Context = createContext<ContextType>({
 	charsPerSecond: 0,
 	setRecentlyCompleted: () => {},
-	theme: {}
+	theme: {
+		common: {},
+		editor: {},
+		header: {}
+	}
 });
 
 export const useControl = (play: boolean) => {

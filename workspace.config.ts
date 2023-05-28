@@ -1,6 +1,9 @@
 import workspaceFiles from './workspace-files.json';
 import * as Theme from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+type CodewriterStyles = {
+  background?: React.CSSProperties;
+}
 
 export type WorkspaceConfig = {
   files: {
@@ -9,7 +12,10 @@ export type WorkspaceConfig = {
     language: string;
   }[];
   theme: {
-    [key: string]: React.CSSProperties;
+    common: CodewriterStyles,
+    editor: CodewriterStyles,
+    header: CodewriterStyles,
+    highlighting: { [key: string ]: React.CSSProperties; }
   };
   charsPerSecond: number;
   alpha?: number;
@@ -17,6 +23,13 @@ export type WorkspaceConfig = {
 
 export const defaultConfig: WorkspaceConfig = {
   files: workspaceFiles,
-  theme: Theme.prism,
+  theme: {
+    common: {
+      "background": Theme.prism['pre[class*="language-"]'].background
+    },
+    highlighting: Theme.prism,
+    editor: {},
+    header: {}
+  },
   charsPerSecond: 15
 };
