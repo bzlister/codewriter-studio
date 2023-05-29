@@ -1,5 +1,6 @@
 import React, {useContext} from 'react';
 import {Context} from '../../utils';
+import './header.css';
 
 interface HeaderProps {
 	fileName: string;
@@ -12,11 +13,18 @@ export const Header = (props: HeaderProps) => {
 	return (
 		<div
 			style={{
-				background: theme['pre[class*="language-"]'].background,
-				padding: 10,
+				backgroundColor: '#ffffff00',
 			}}
 		>
-			{fileName}
+			<span
+				className="folder-tab selected"
+				style={{
+					...theme.common,
+					...theme.header,
+				}}
+			>
+				<span>{fileName}</span>
+			</span>
 		</div>
 	);
 };

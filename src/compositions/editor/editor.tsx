@@ -14,7 +14,10 @@ interface EditorProps {
 
 export const Editor = (props: EditorProps) => {
 	const {code, language, cursorColor, maxLines, typing} = props;
-	const {setRecentlyCompleted, theme} = useContext(Context);
+	const {
+		setRecentlyCompleted,
+		theme: {common, editor},
+	} = useContext(Context);
 	const current = useTypewriter(code.length, typing);
 
 	const newLines = useMemo(() => {
@@ -72,15 +75,15 @@ export const Editor = (props: EditorProps) => {
 	return (
 		<div
 			style={{
-				...theme.common,
-				...theme.editor,
+				...common,
+				...editor,
 				flex: 'auto',
 			}}
 		>
 			<Prism
 				children={typedText}
 				showLineNumbers
-				style={theme}
+				style={editor.text}
 				customStyle={{
 					border: 'none',
 					background: 'none',
