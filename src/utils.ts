@@ -48,3 +48,4 @@ export const useIter = <T>(arr: T[]): [T, () => void, boolean] => {
 
 	return [arr[index], next, index === arr.length - 1]; 
 }
+

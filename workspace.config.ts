@@ -1,10 +1,35 @@
 import workspaceFiles from './workspace-files.json';
 import * as Theme from 'react-syntax-highlighter/dist/esm/styles/prism';
+import videoBg from './assets/videoBg.mp4';
+import sunrise from './assets/sunrise_-_83880 (720p).mp4';
 
-type CodewriterStyles = {
-  background?: React.CSSProperties['background'];
-  backgroundColor?: string;
-  text?: { [key: string ]: React.CSSProperties };
+type CodewriterStyles = Pick<React.CSSProperties, 'background'
+  | 'backgroundColor'
+  | 'fontFamily'
+  | 'fontSize'
+  | 'color'
+  | 'borderRadius'>;
+
+const setOpacity = (color: React.CSSProperties['color'], opacity: number): React.CSSProperties['color'] => {
+  if (opacity < 0 || opacity > 255)
+    return color;
+  if (opacity > 0 && opacity < 1)
+    opacity = Math.floor(opacity*255);
+
+  if (typeof color === "string") {
+    if (color.charAt(0) === '#') {
+      if (color.length > 7)
+        color = color.substring(0, 7);
+
+      let opacityHex = opacity.toString(16).toUpperCase();
+      if (opacityHex.length === 1)
+        opacityHex = "0" + opacityHex;
+      
+      return color + opacityHex;
+    }
+  }
+
+  return color;
 }
 
 export type WorkspaceConfig = {
@@ -18,6 +43,11 @@ export type WorkspaceConfig = {
     editor: CodewriterStyles,
     header: CodewriterStyles,
   };
+  canvas: {
+    videoUrl?: string;
+    imgUrl?: string;
+    overlay?: boolean
+  }
   charsPerSecond: number;
 }
 
@@ -27,13 +57,19 @@ export const defaultConfig: WorkspaceConfig = {
     common: {
       background: Theme.prism['pre[class*="language-"]'].background
     },
-    editor: {
-      text: Theme.prism
-    },
+    editor: { ...Theme.prism, borderRadius: 20, backgroundColor: setOpacity(Theme.prism['pre[class*="language-"]'].background as string, 0.8) },
     header: {
       background: Theme.prism['pre[class*="language-"]'].background,
-      backgroundColor: Theme.prism['pre[class*="language-"]'].background as string
+      backgroundColor: setOpacity(Theme.prism['pre[class*="language-"]'].background as string, 0.8),
+      fontFamily: 'sans-serif',
+      fontSize: 16,
+      color: '#1a1a1b',
     }
+  },
+  canvas: {
+    videoUrl: sunrise
   },
   charsPerSecond: 15
 };
+
+

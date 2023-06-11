@@ -83,7 +83,7 @@ export const Editor = (props: EditorProps) => {
 			<Prism
 				children={typedText}
 				showLineNumbers
-				style={editor.text}
+				style={{...editor}}
 				customStyle={{
 					border: 'none',
 					background: 'none',

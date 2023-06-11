@@ -21,6 +21,7 @@ export const Header = (props: HeaderProps) => {
 				style={{
 					...theme.common,
 					...theme.header,
+					marginLeft: 20,
 				}}
 			>
 				<span>{fileName}</span>
