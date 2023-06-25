@@ -57,10 +57,10 @@ export const defaultConfig: WorkspaceConfig = {
     common: {
       background: Theme.prism['pre[class*="language-"]'].background
     },
-    editor: { ...Theme.prism, borderRadius: 20, backgroundColor: setOpacity(Theme.prism['pre[class*="language-"]'].background as string, 0.8) },
+    editor: { ...Theme.prism, borderRadius: 20, backgroundColor: setOpacity(Theme.prism['pre[class*="language-"]'].background as string, 0.9) },
     header: {
       background: Theme.prism['pre[class*="language-"]'].background,
-      backgroundColor: setOpacity(Theme.prism['pre[class*="language-"]'].background as string, 0.8),
+      backgroundColor: setOpacity(Theme.prism['pre[class*="language-"]'].background as string, 0.9),
       fontFamily: 'sans-serif',
       fontSize: 16,
       color: '#1a1a1b',

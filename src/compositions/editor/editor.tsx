@@ -10,12 +10,12 @@ interface EditorProps {
 	cursorColor: `rgba(${number}, ${number}, ${number}, ${number})`;
 	maxLines: number;
 	typing: boolean;
+	loadNext: () => void;
 }
 
 export const Editor = (props: EditorProps) => {
-	const {code, language, cursorColor, maxLines, typing} = props;
+	const {code, language, cursorColor, maxLines, typing, loadNext} = props;
 	const {
-		setRecentlyCompleted,
 		theme: {common, editor},
 	} = useContext(Context);
 	const current = useTypewriter(code.length, typing);
@@ -68,7 +68,7 @@ export const Editor = (props: EditorProps) => {
 	const done = typing && end === code.length;
 	useEffect(() => {
 		if (done) {
-			setRecentlyCompleted('editor');
+			loadNext(); // setRecentlyCompleted("editor")
 		}
 	}, [done]);
 

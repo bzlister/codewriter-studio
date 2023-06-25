@@ -35,6 +35,7 @@ export const StandardEditorWorkspace = ({
 					typing={!done}
 					cursorColor={'rgba(0, 0, 30, 255)'}
 					maxLines={25}
+					loadNext={loadNext}
 				/>
 			</Canvas>
 		</Context.Provider>
