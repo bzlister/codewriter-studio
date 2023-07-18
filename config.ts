@@ -1,42 +1,40 @@
 import {CSSProperties} from 'react';
 import * as Theme from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-export type CodewriterConfig<T extends CanvasType> = {
+export type CodewriterConfig = {
 	IDE: {
 		fileTab: boolean;
 		directory: boolean;
 	};
-	canvas: CanvasConfig<T>;
+	canvas: {width: number; height: number} & (
+		| {type: 'none'}
+		| {type: 'solid'; color: CSSProperties['color']}
+		| {type: 'image'; url: string}
+		| {type: 'video'; url: string}
+	);
 	theme: (typeof Theme)[keyof typeof Theme]; // TODO - narrow
-	typing: {
-		charsPerSecond: number;
+	animation: {
+		fps: number;
+		framesPerChar: number;
 		sound: 'none' | 'standard';
 	};
 	contentSource: string;
 };
 
-export const defaultConfig: Omit<CodewriterConfig<'none'>, 'contentSource'> = {
+export const defaultConfig: Omit<CodewriterConfig, 'contentSource'> = {
 	IDE: {
 		fileTab: false,
 		directory: false,
 	},
 	canvas: {
+		width: 1280,
+		height: 720,
 		type: 'none',
 	},
 	theme: Theme.atomDark,
-	typing: {
-		charsPerSecond: 15,
+	animation: {
+		fps: 60,
+		framesPerChar: 4,
 		sound: 'none',
 	},
 };
-
-type CanvasType = 'none' | 'solid' | 'image' | 'video';
-type CanvasConfig<T extends CanvasType> = {
-	type: T;
-} & (T extends 'none'
-	? {}
-	: T extends 'solid'
-	? {color: CSSProperties['color']}
-	: T extends 'image' | 'video'
-	? {url: string}
-	: never);
