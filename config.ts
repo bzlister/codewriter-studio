@@ -2,16 +2,17 @@ import {CSSProperties} from 'react';
 import * as Theme from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export type CodewriterConfig = {
-	IDE: {
+	width: number;
+	height: number;
+	workspace: {
 		fileTab: boolean;
 		directory: boolean;
 	};
-	canvas: {width: number; height: number} & (
+	canvas:
 		| {type: 'none'}
 		| {type: 'solid'; color: CSSProperties['color']}
 		| {type: 'image'; url: string}
-		| {type: 'video'; url: string}
-	);
+		| {type: 'video'; url: string};
 	theme: (typeof Theme)[keyof typeof Theme]; // TODO - narrow
 	animation: {
 		fps: number;
@@ -22,13 +23,13 @@ export type CodewriterConfig = {
 };
 
 export const defaultConfig: Omit<CodewriterConfig, 'contentSource'> = {
-	IDE: {
+	width: 1280,
+	height: 720,
+	workspace: {
 		fileTab: false,
 		directory: false,
 	},
 	canvas: {
-		width: 1280,
-		height: 720,
 		type: 'none',
 	},
 	theme: Theme.atomDark,

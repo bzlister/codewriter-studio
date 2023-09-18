@@ -1,0 +1,9 @@
+.background {
+	position: relative;
+}
+
+.content {
+	position: absolute;
+	top: 15px;
+	left: 15px;
+}
