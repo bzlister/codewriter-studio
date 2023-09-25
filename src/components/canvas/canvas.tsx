@@ -1,9 +1,9 @@
-import React, {useMemo, PropsWithChildren} from 'react';
-import {useCurrentFrame, useVideoConfig, Video} from 'remotion';
+import React, {PropsWithChildren} from 'react';
+import {useVideoConfig, Video} from 'remotion';
 import './canvas.css';
 
 interface CanvasProps {
-	type: 'solid' | 'image' | 'video';
+	type: 'solid' | 'image' | 'video' | 'none';
 	url?: string;
 	color?: React.CSSProperties['color'];
 	overlay?: boolean;
@@ -13,8 +13,10 @@ export const Canvas = (props: PropsWithChildren<CanvasProps>) => {
 	const {type, url, color, overlay, children} = props;
 	const {width, height} = useVideoConfig();
 
-	return (
-		<div className="background">
+	return type === 'none' ? (
+		<div>{children}</div>
+	) : (
+		<div className="canvas">
 			{url ? (
 				type === 'video' ? (
 					<Video src={url} width={width} height={height} muted>

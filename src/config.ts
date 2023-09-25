@@ -3,10 +3,11 @@ import * as Theme from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export enum Language {
 	JS,
+	TS,
 }
 
 export type File = {
-	name: string;
+	path: string;
 	content: string;
 	language: Language;
 };
