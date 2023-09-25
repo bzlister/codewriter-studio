@@ -1,36 +1,32 @@
 import React, {useMemo, useState} from 'react';
 import {Composition} from 'remotion';
-import {CodewriterConfig} from '../config';
+import {CodewriterConfig} from './config';
 import {CodewriterContainer} from './codewriter-container';
 import {ControlContext, ConfigContext} from './common/context';
 
 export const AppContainer = (config: CodewriterConfig) => {
-	const {width, height, workspace, canvas, animation, contentSource, theme} =
-		config;
+	const {width, height, workspace, canvas, animation, content, theme} = config;
 	const {fps} = animation;
 	const [duration, setDuration] = useState(10);
 
-	const files = []; //useMemo(() => loadContent(contentSource, []), []);
-
 	return (
-		files && (
-			<Composition
-				id="codewriter"
-				component={() => (
-					<CodewriterContainer
-						canvas={canvas}
-						theme={theme}
-						animation={animation}
-						workspace={workspace}
-						setDuration={setDuration}
-					/>
-				)}
-				durationInFrames={duration}
-				fps={fps}
-				width={width}
-				height={height}
-			/>
-		)
+		<Composition
+			id="codewriter"
+			component={() => (
+				<CodewriterContainer
+					canvas={canvas}
+					theme={theme}
+					animation={animation}
+					workspace={workspace}
+					content={content}
+					setDuration={setDuration}
+				/>
+			)}
+			durationInFrames={duration}
+			fps={fps}
+			width={width}
+			height={height}
+		/>
 	);
 };
 

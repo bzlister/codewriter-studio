@@ -1,7 +1,7 @@
 import {registerRoot} from 'remotion';
 import * as Theme from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {AppContainer} from './src/app-container';
-import {CodewriterConfig, defaultConfig} from './config';
+import {CodewriterConfig, defaultConfig} from './src/config';
 
 const previewConfig: CodewriterConfig = {
 	width: 1280,

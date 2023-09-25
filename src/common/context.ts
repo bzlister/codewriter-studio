@@ -1,5 +1,5 @@
 import {createContext} from 'react';
-import {CodewriterConfig} from '../../config';
+import {CodewriterConfig} from '../config';
 
 export const ConfigContext = createContext<
 	Pick<CodewriterConfig, 'theme' | 'animation'>

@@ -1,6 +1,16 @@
 import {CSSProperties} from 'react';
 import * as Theme from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+export enum Language {
+	JS,
+}
+
+export type File = {
+	name: string;
+	content: string;
+	language: Language;
+};
+
 export type CodewriterConfig = {
 	width: number;
 	height: number;
@@ -19,7 +29,7 @@ export type CodewriterConfig = {
 		framesPerChar: number;
 		sound: 'none' | 'standard';
 	};
-	contentSource: string;
+	content: File[];
 };
 
 export const defaultConfig: Omit<CodewriterConfig, 'contentSource'> = {

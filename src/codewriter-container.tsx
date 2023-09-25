@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import {Canvas} from './components/canvas/canvas';
-import {CodewriterConfig} from '../config';
+import {CodewriterConfig} from './config';
 import {Workspace} from './components/workspace/workspace';
 
 interface CodewriterContainerProps {
@@ -8,6 +8,7 @@ interface CodewriterContainerProps {
 	canvas: CodewriterConfig['canvas'];
 	theme: CodewriterConfig['theme'];
 	animation: CodewriterConfig['animation'];
+	content: CodewriterConfig['content'];
 	setDuration: React.Dispatch<React.SetStateAction<number>>;
 }
 export const CodewriterContainer = (props: CodewriterContainerProps) => {
@@ -16,6 +17,7 @@ export const CodewriterContainer = (props: CodewriterContainerProps) => {
 		canvas: {type, ...canvasProps},
 		theme,
 		animation,
+		content,
 		setDuration,
 	} = props;
 
