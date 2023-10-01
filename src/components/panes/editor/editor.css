@@ -1,5 +1,7 @@
 .editor {
-	padding: 15px;
-	background-color: sienna;
 	flex: 1;
+	> * {
+		height: 100%;
+		margin: unset;
+	}
 }

@@ -21,7 +21,10 @@ export const Workspace = (props: WorkspaceProps) => {
 			{directory ? <Directory /> : <></>}
 			<div className="editor-filetab-container">
 				{fileTab ? <FileTab /> : <></>}
-				<Editor />
+				<Editor
+					file={files[fileIndex]}
+					done={() => setFileIndex((indx) => indx + 1)}
+				/>
 			</div>
 		</div>
 	);

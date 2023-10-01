@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Composition} from 'remotion';
 import {CodewriterConfig} from './config';
 import {Workspace} from './components/workspace/workspace';
-import {Canvas} from './components/canvas/canvas';
+import {Canvas, getCanvasColorFromTheme} from './components/canvas/canvas';
 import {CodewriterContext} from './common/context';
 
 export const AppContainer = (config: CodewriterConfig) => {
@@ -22,7 +22,11 @@ export const AppContainer = (config: CodewriterConfig) => {
 		<Composition
 			id="codewriter"
 			component={() => (
-				<Canvas type={type} {...canvasProps}>
+				<Canvas
+					type={type}
+					color={getCanvasColorFromTheme(theme)}
+					{...canvasProps}
+				>
 					<CodewriterContext.Provider value={{theme, animation}}>
 						<Workspace {...workspace} files={files} setDuration={setDuration} />
 					</CodewriterContext.Provider>

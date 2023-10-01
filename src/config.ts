@@ -1,16 +1,10 @@
 import {CSSProperties} from 'react';
 import * as Theme from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-export enum Language {
-	JS,
-	TS,
-	CSS,
-}
-
 export type File = {
 	path: string;
 	content: string;
-	language: Language;
+	language: 'js' | 'css' | 'tsx' | 'typescript';
 };
 
 export type CodewriterConfig = {
@@ -22,7 +16,7 @@ export type CodewriterConfig = {
 	};
 	canvas:
 		| {type: 'none'}
-		| {type: 'solid'; color: CSSProperties['color']}
+		| {type: 'solid'}
 		| {type: 'image'; url: string}
 		| {type: 'video'; url: string};
 	theme: (typeof Theme)[keyof typeof Theme]; // TODO - narrow

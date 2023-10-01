@@ -5,7 +5,7 @@ import './canvas.css';
 interface CanvasProps {
 	type: 'solid' | 'image' | 'video' | 'none';
 	url?: string;
-	color?: React.CSSProperties['color'];
+	color?: React.CSSProperties['backgroundColor'];
 	overlay?: boolean;
 }
 
@@ -35,3 +35,10 @@ export const Canvas = (props: PropsWithChildren<CanvasProps>) => {
 		</div>
 	);
 };
+
+export const getCanvasColorFromTheme = (
+	theme: Record<string, React.CSSProperties>
+): React.CSSProperties['background'] =>
+	theme['div.code-toolbar > .toolbar.toolbar > .toolbar-item > a'][
+		'background'
+	];

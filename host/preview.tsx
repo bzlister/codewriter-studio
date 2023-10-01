@@ -1,12 +1,12 @@
 import {registerRoot} from 'remotion';
 import * as Theme from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {AppContainer} from '../src/app-container';
-import {CodewriterConfig, defaultConfig, File, Language} from '../src/config';
+import {CodewriterConfig, defaultConfig, File} from '../src/config';
 
 const files: File[] = [
 	{
 		path: 'src/app.ts',
-		language: Language.TS,
+		language: 'typescript',
 		content: `export const setOpacity = (
 		color: React.CSSProperties['color'],
 		opacity: number
@@ -30,7 +30,7 @@ const files: File[] = [
 	},
 	{
 		path: 'src/components/canvas/canvas.css',
-		language: Language.CSS,
+		language: 'css',
 		content: `.background {
 			position: relative;
 		}
@@ -48,12 +48,11 @@ const previewConfig: CodewriterConfig = {
 	width: 1280,
 	height: 720,
 	workspace: {
-		fileTab: true,
-		directory: true,
+		fileTab: false,
+		directory: false,
 	},
 	canvas: {
 		type: 'solid',
-		color: 'purple',
 	},
 	theme: Theme.coldarkCold,
 	animation: {
