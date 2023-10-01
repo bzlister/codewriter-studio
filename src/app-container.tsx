@@ -3,6 +3,7 @@ import {Composition} from 'remotion';
 import {CodewriterConfig} from './config';
 import {Workspace} from './components/workspace/workspace';
 import {Canvas} from './components/canvas/canvas';
+import {CodewriterContext} from './common/context';
 
 export const AppContainer = (config: CodewriterConfig) => {
 	const {
@@ -11,7 +12,7 @@ export const AppContainer = (config: CodewriterConfig) => {
 		workspace,
 		canvas: {type, ...canvasProps},
 		animation,
-		content,
+		files,
 		theme,
 	} = config;
 	const {fps} = animation;
@@ -22,7 +23,9 @@ export const AppContainer = (config: CodewriterConfig) => {
 			id="codewriter"
 			component={() => (
 				<Canvas type={type} {...canvasProps}>
-					<Workspace {...workspace} />
+					<CodewriterContext.Provider value={{theme, animation}}>
+						<Workspace {...workspace} files={files} setDuration={setDuration} />
+					</CodewriterContext.Provider>
 				</Canvas>
 			)}
 			durationInFrames={duration}

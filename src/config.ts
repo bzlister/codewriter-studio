@@ -4,6 +4,7 @@ import * as Theme from 'react-syntax-highlighter/dist/esm/styles/prism';
 export enum Language {
 	JS,
 	TS,
+	CSS,
 }
 
 export type File = {
@@ -30,10 +31,10 @@ export type CodewriterConfig = {
 		framesPerChar: number;
 		sound: 'none' | 'standard';
 	};
-	content: File[];
+	files: File[];
 };
 
-export const defaultConfig: Omit<CodewriterConfig, 'contentSource'> = {
+export const defaultConfig: Omit<CodewriterConfig, 'files'> = {
 	width: 1280,
 	height: 720,
 	workspace: {

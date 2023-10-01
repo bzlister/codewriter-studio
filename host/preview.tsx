@@ -48,8 +48,8 @@ const previewConfig: CodewriterConfig = {
 	width: 1280,
 	height: 720,
 	workspace: {
-		fileTab: false,
-		directory: false,
+		fileTab: true,
+		directory: true,
 	},
 	canvas: {
 		type: 'solid',
@@ -61,7 +61,7 @@ const previewConfig: CodewriterConfig = {
 		framesPerChar: 5,
 		sound: 'none',
 	},
-	content: files,
+	files: files,
 };
 registerRoot(() => AppContainer(previewConfig));
 
