@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import {CodewriterConfig, File} from '../../config';
+import {Directory} from '../panes/directory/directory';
 import {Editor} from '../panes/editor/editor';
+import {FileTab} from '../panes/file-tab/file-tab';
 import './workspace.css';
 
 interface WorkspaceProps {
@@ -16,12 +18,10 @@ export const Workspace = (props: WorkspaceProps) => {
 
 	return (
 		<div className="workspace">
-			{directory ? <div className="directory"></div> : <></>}
+			{directory ? <Directory /> : <></>}
 			<div className="editor-filetab-container">
-				{fileTab ? <div className="fileTab"></div> : <></>}
-				<div className="editor">
-					<Editor />
-				</div>
+				{fileTab ? <FileTab /> : <></>}
+				<Editor />
 			</div>
 		</div>
 	);

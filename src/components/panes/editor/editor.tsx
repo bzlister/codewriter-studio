@@ -1,5 +1,6 @@
 import React from 'react';
+import './editor.css';
 
 export const Editor = () => {
-	return <div>Lorem ipsum</div>;
+	return <div className="editor">Lorem ipsum</div>;
 };

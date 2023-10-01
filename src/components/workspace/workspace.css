@@ -3,22 +3,6 @@
 	height: 100%;
 }
 
-.fileTab {
-	background-color: brown;
-	height: 30px;
-	width: 120px;
-}
-
-.directory {
-	background-color: peru;
-	width: 200px;
-}
-
-.editor {
-	background-color: sienna;
-	flex: 1;
-}
-
 .editor-filetab-container {
 	display: flex;
 	flex-direction: column;
