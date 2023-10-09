@@ -1,8 +1,10 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {Composition} from 'remotion';
+import * as Theme from 'react-syntax-highlighter/dist/esm/styles/prism';
+
 import {CodewriterConfig} from './config';
 import {Workspace} from './components/workspace/workspace';
-import {Canvas, getCanvasColorFromTheme} from './components/canvas/canvas';
+import {Canvas} from './components/canvas/canvas';
 import {CodewriterContext} from './common/context';
 
 export const AppContainer = (config: CodewriterConfig) => {
@@ -13,29 +15,45 @@ export const AppContainer = (config: CodewriterConfig) => {
 		canvas: {type, ...canvasProps},
 		animation,
 		files,
-		theme,
+		theme: initialTheme,
 	} = config;
 	const {fps} = animation;
 	const [duration, setDuration] = useState(10);
+	const [theme, setTheme] = React.useState(initialTheme);
+	const dropdownOptions = Object.keys(Theme).map((name) => (
+		<option value={name}>{name}</option>
+	));
 
 	return (
-		<Composition
-			id="codewriter"
-			component={() => (
-				<Canvas
-					type={type}
-					color={getCanvasColorFromTheme(theme)}
-					{...canvasProps}
-				>
-					<CodewriterContext.Provider value={{theme, animation}}>
-						<Workspace {...workspace} files={files} setDuration={setDuration} />
-					</CodewriterContext.Provider>
-				</Canvas>
-			)}
-			durationInFrames={duration}
-			fps={fps}
-			width={width}
-			height={height}
-		/>
+		<>
+			<select
+				id="dropdownSelect"
+				onChange={(event) => {
+					const x = Theme[event.target.value];
+					debugger;
+					setTheme(x);
+				}}
+			>
+				{dropdownOptions}
+			</select>
+			<Composition
+				id="codewriter"
+				component={() => (
+					<Canvas type={type} background={'turquoise'} {...canvasProps}>
+						<CodewriterContext.Provider value={{theme, animation}}>
+							<Workspace
+								{...workspace}
+								files={files}
+								setDuration={setDuration}
+							/>
+						</CodewriterContext.Provider>
+					</Canvas>
+				)}
+				durationInFrames={duration}
+				fps={fps}
+				width={width}
+				height={height}
+			/>
+		</>
 	);
 };

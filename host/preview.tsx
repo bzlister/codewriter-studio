@@ -52,7 +52,7 @@ const previewConfig: CodewriterConfig = {
 		directory: false,
 	},
 	canvas: {
-		type: 'solid',
+		type: 'none',
 	},
 	theme: Theme.coldarkCold,
 	animation: {

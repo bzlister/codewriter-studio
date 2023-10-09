@@ -1,20 +1,21 @@
-import React, {PropsWithChildren} from 'react';
+import React, {PropsWithChildren, useRef} from 'react';
+import {createRoot} from 'react-dom/client';
 import {useVideoConfig, Video} from 'remotion';
 import './canvas.css';
 
 interface CanvasProps {
 	type: 'solid' | 'image' | 'video' | 'none';
 	url?: string;
-	color?: React.CSSProperties['backgroundColor'];
+	background?: React.CSSProperties['background'];
 	overlay?: boolean;
 }
 
 export const Canvas = (props: PropsWithChildren<CanvasProps>) => {
-	const {type, url, color, overlay, children} = props;
+	const {type, url, background, overlay, children} = props;
 	const {width, height} = useVideoConfig();
 
 	return type === 'none' ? (
-		<div>{children}</div>
+		<>{children}</>
 	) : (
 		<div className="canvas">
 			{url ? (
@@ -28,7 +29,7 @@ export const Canvas = (props: PropsWithChildren<CanvasProps>) => {
 					</img>
 				)
 			) : (
-				<div style={{background: color, width, height}}>
+				<div style={{background, width, height}}>
 					<div className="content">{children}</div>
 				</div>
 			)}
@@ -36,9 +37,18 @@ export const Canvas = (props: PropsWithChildren<CanvasProps>) => {
 	);
 };
 
+/*
 export const getCanvasColorFromTheme = (
-	theme: Record<string, React.CSSProperties>
-): React.CSSProperties['background'] =>
-	theme['div.code-toolbar > .toolbar.toolbar > .toolbar-item > a'][
-		'background'
-	];
+	theme: Record<string, React.CSSProperties>,
+	ref: HTMLElement
+): React.CSSProperties['backgroundColor'] => {
+	const background: React.CSSProperties['background'] =
+		theme['div.code-toolbar > .toolbar.toolbar > .toolbar-item > a'][
+			'background'
+		];
+
+	debugger;
+	const x = window.getComputedStyle(ref).backgroundColor;
+	return x;
+};
+*/

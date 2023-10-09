@@ -1,3 +1,7 @@
+import {useContext, useMemo, useState} from 'react';
+import {useCurrentFrame} from 'remotion';
+import {CodewriterContext} from './context';
+
 export const setOpacity = (
 	color: React.CSSProperties['color'],
 	opacity: number
@@ -17,4 +21,14 @@ export const setOpacity = (
 	}
 
 	return color;
+};
+
+export const useKeystrokes = (active: boolean) => {
+	const frame = useCurrentFrame();
+	const activatedFrame = useMemo(() => frame, [active]);
+	const {
+		animation: {framesPerChar},
+	} = useContext(CodewriterContext);
+
+	return active ? Math.floor((frame - activatedFrame) / framesPerChar) : 0;
 };

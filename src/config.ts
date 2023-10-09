@@ -1,10 +1,12 @@
 import {CSSProperties} from 'react';
 import * as Theme from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+export type Language = 'js' | 'css' | 'tsx' | 'typescript';
+
 export type File = {
 	path: string;
 	content: string;
-	language: 'js' | 'css' | 'tsx' | 'typescript';
+	language: Language;
 };
 
 export type CodewriterConfig = {
