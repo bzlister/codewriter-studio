@@ -32,3 +32,9 @@ export const useKeystrokes = (active: boolean) => {
 
 	return active ? Math.floor((frame - activatedFrame) / framesPerChar) : 0;
 };
+
+export const assert = (condition: boolean, message: string) => {
+	if (!condition) {
+		throw message;
+	}
+};

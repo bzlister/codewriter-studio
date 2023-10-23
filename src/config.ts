@@ -1,7 +1,7 @@
 import {CSSProperties} from 'react';
 import * as Theme from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-export type Language = 'js' | 'css' | 'tsx' | 'typescript';
+export type Language = 'js' | 'css' | 'tsx' | 'typescript' | 'html';
 
 export type File = {
 	path: string;
@@ -28,6 +28,7 @@ export type CodewriterConfig = {
 		sound: 'none' | 'standard';
 	};
 	files: File[];
+	showLineNumbers: boolean;
 };
 
 export const defaultConfig: Omit<CodewriterConfig, 'files'> = {

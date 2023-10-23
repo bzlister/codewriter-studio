@@ -16,6 +16,7 @@ export const AppContainer = (config: CodewriterConfig) => {
 		animation,
 		files,
 		theme: initialTheme,
+		showLineNumbers,
 	} = config;
 	const {fps} = animation;
 	const [duration, setDuration] = useState(10);
@@ -40,7 +41,9 @@ export const AppContainer = (config: CodewriterConfig) => {
 				id="codewriter"
 				component={() => (
 					<Canvas type={type} background={'turquoise'} {...canvasProps}>
-						<CodewriterContext.Provider value={{theme, animation}}>
+						<CodewriterContext.Provider
+							value={{theme, animation, showLineNumbers}}
+						>
 							<Workspace
 								{...workspace}
 								files={files}

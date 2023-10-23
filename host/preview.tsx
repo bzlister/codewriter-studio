@@ -61,6 +61,7 @@ const previewConfig: CodewriterConfig = {
 		sound: 'none',
 	},
 	files: files,
+	showLineNumbers: true,
 };
 registerRoot(() => AppContainer(previewConfig));
 
