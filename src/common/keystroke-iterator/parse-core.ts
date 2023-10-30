@@ -1,4 +1,4 @@
-import {assert} from '../../../../common/util';
+import {assert} from '../util';
 
 export type Token = string | RegExp;
 
@@ -19,7 +19,7 @@ const handleEscape = (
 	const c = content.charAt(i);
 	const escape = formatEscapeChars.find((f) => c === f);
 	if (escape) {
-		const escapeEnd = content.indexOf(escape, i);
+		const escapeEnd = content.indexOf(escape, i + 1);
 		assert(
 			escapeEnd > i,
 			`Expected to close escaped sequence ${content.substring(i)}`
@@ -34,7 +34,7 @@ const handleEscape = (
 const match = (char: string, token: Token) =>
 	typeof token === 'string' ? token === char : char.match(token);
 
-export const getParseTree = (
+export const getParseTreeCore = (
 	content: string,
 	groupingSymbols: [Token, Token][],
 	formatEscapeChars: string[]
@@ -72,7 +72,7 @@ export const getParseTree = (
 					group: {
 						start: group[0],
 						end: group[1],
-						children: getParseTree(
+						children: getParseTreeCore(
 							content.substring(i + 1, j),
 							groupingSymbols,
 							formatEscapeChars

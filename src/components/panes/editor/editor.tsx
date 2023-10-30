@@ -9,7 +9,7 @@ import {CodewriterContext} from '../../../common/context';
 import {useKeystrokes} from '../../../common/util';
 import {File} from '../../../config';
 import './editor.css';
-import {parse} from './parsers/parser';
+import {parse} from '../../../common/keystroke-iterator/parse-tree';
 
 interface EditorProps {
 	file: File;
