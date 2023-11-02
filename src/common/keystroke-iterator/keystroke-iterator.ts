@@ -1,9 +1,7 @@
 import {Language} from '../../config';
-import {
-	GroupMatcher,
-	IKeystrokeIterator,
-	KeystrokeIterator,
-} from './keystroke-iterator-core';
+import {GroupMatcher} from './group';
+import {IKeystrokeIterator, KeystrokeIterator} from './keystroke-iterator-core';
+import {matchGroupsTS} from './typescript/typescript';
 
 export const getKeystrokeIterator = (
 	language: Language,

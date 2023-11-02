@@ -1,22 +1,14 @@
-import {parseTS} from './typescript';
+import {getKeystrokeIterator} from '../keystroke-iterator';
+import {TestKeystrokeIterator} from '../test-utils';
 
 describe('typescript parser', () => {
 	it('braces', () => {
 		const tsc = `import { parseTS } from './typescript'`;
-		const result = parseTS(tsc);
-		expect(result).toEqual([
-			{
-				unformatted: 'import ',
-				group: {start: '{', end: '}', children: [{unformatted: ' parseTS '}]},
-			},
-			{
-				unformatted: ' from ',
-				group: {
-					start: `'`,
-					end: `'`,
-					children: [{unformatted: './typescript'}],
-				},
-			},
-		]);
+		const iter = new TestKeystrokeIterator('typescript', tsc);
+		expect(iter.next()).toEqual(['import {', '}']);
+		expect(iter.next()).toEqual(['import { parseTS }', '']);
+		expect(iter.next()).toEqual([`import { parseTS } from '`, `'`]);
+		expect(iter.next()).toEqual([`import { parseTS } from './typescript'`, '']);
+		expect(iter.next()).toBeNull();
 	});
 });

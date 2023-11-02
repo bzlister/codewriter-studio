@@ -8,30 +8,29 @@ export interface IKeystrokeIterator {
 export class KeystrokeIterator implements IKeystrokeIterator {
 	private indx = 0;
 	private post: GroupingSymbol[] = [];
-	private groupMatchers: GroupMatcher[] = [];
+	private overrideMatchers: GroupMatcher[] = [];
 
-	constructor(private readonly raw: string, groupMatcher: GroupMatcher) {
-		this.groupMatchers.push(groupMatcher);
-	}
+	constructor(
+		private readonly raw: string,
+		private readonly groupMatcher: GroupMatcher
+	) {}
 
 	next(): [string, string] | null {
 		let i = this.indx;
 		if (i === this.raw.length) return null;
 
-		const matcher = this.groupMatchers[this.groupMatchers.length - 1];
+		const matcher = this.overrideMatchers.length
+			? this.overrideMatchers[this.overrideMatchers.length - 1]
+			: this.groupMatcher;
 		const group = matcher(i, this.raw);
 
 		if (this.post.length && i === this.post[this.post.length - 1].indx) {
 			const groupingSymbol = this.post.pop();
-			this.groupMatchers.pop();
-			assert(
-				this.groupMatchers.length > 0,
-				'Expected to always have the default matcher'
-			);
+			this.overrideMatchers.pop();
 			i += groupingSymbol!.chars.length;
 		} else if (group) {
 			if (group.groupMatcherOverride) {
-				this.groupMatchers.push(group.groupMatcherOverride);
+				this.overrideMatchers.push(group.groupMatcherOverride);
 			}
 
 			this.post.push(group.end);
@@ -45,6 +44,8 @@ export class KeystrokeIterator implements IKeystrokeIterator {
 	}
 
 	private printClosure(): string {
-		return this.post.map((p) => p.chars).reduce((S, s) => `${S}${s}`);
+		return this.post.length
+			? this.post.map((p) => p.chars).reduce((S, s) => `${S}${s}`)
+			: '';
 	}
 }
