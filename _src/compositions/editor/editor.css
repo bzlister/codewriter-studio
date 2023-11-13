@@ -1,8 +1,0 @@
-span[class*='styles-module_blinkingCursor'] {
-  left: 0;
-  font-size:  16px;
-}
-
-span[class*='linenumber'] {
-  min-width: 2.25em !important;
-}

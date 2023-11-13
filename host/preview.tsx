@@ -56,8 +56,8 @@ const previewConfig: CodewriterConfig = {
 	},
 	theme: Theme.coldarkCold,
 	animation: {
-		fps: 5,
-		framesPerChar: 5,
+		fps: 60,
+		framesPerChar: 10,
 		sound: 'none',
 	},
 	files: files,

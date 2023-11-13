@@ -24,6 +24,7 @@ export const Workspace = (props: WorkspaceProps) => {
 				<Editor
 					file={files[fileIndex]}
 					done={() => setFileIndex((indx) => indx + 1)}
+					active={true}
 				/>
 			</div>
 		</div>

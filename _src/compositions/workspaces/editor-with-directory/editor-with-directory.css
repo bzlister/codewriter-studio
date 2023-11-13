@@ -1,6 +1,0 @@
-.grid-parent {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: auto;
-  min-height: 100%;
-}

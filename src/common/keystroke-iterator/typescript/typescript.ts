@@ -5,7 +5,15 @@ export const matchGroupsTS: GroupMatcher = groupMatcherFactory([
 	['(', ')'],
 	['{', '}'],
 	['[', ']'],
-	['`', '`'],
+	[
+		'`',
+		'`',
+		groupMatcherFactory([
+			['(', ')'],
+			['{', '}'],
+			['[', ']'],
+		]),
+	],
 	['/**', ' */'],
 	[`'`, `'`, (i, s) => undefined],
 	[`"`, `"`, (i, s) => undefined],

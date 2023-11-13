@@ -44,7 +44,7 @@ export const defaultConfig: Omit<CodewriterConfig, 'files'> = {
 	theme: Theme.atomDark,
 	animation: {
 		fps: 60,
-		framesPerChar: 4,
+		framesPerChar: 1,
 		sound: 'none',
 	},
 };

@@ -1,16 +1,18 @@
 import {Language} from '../../config';
-import {getKeystrokeIterator} from './keystroke-iterator';
-import {IKeystrokeIterator} from './keystroke-iterator-core';
+import {IKeystrokeIterator, KeystrokeIterator} from './keystroke-iterator';
 
 export class TestKeystrokeIterator implements IKeystrokeIterator {
 	private Post: string = '';
 	private iter: IKeystrokeIterator;
+	private _pedantic = false;
 
 	constructor(language: Language, content: string) {
-		this.iter = getKeystrokeIterator(language, content);
+		this.iter = new KeystrokeIterator(language, content);
 	}
 
 	next(): [string, string] | null {
+		if (this.pedantic) return this.iter.next();
+
 		let pair: [string, string] | null;
 		let Pre: string = '';
 
@@ -24,5 +26,14 @@ export class TestKeystrokeIterator implements IKeystrokeIterator {
 		}
 
 		return Pre ? [Pre, this.Post] : null;
+	}
+
+	get pedantic() {
+		return this._pedantic;
+	}
+
+	set pedantic(value: boolean) {
+		if (this._pedantic) throw 'Cannot unset';
+		this._pedantic = value;
 	}
 }
