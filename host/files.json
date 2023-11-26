@@ -1,0 +1,7 @@
+[
+  {
+    "path": "C:\\repos\\codewriter\\host\\sample\\sample.ts",
+    "content": "const a = `\\r\\n`;\r\nconst b = `\r\n`;\r\n\r\nconst fn = (s: string) => {\r\n\tconsole.log(s);\r\n};\r\n\r\nfn(`\r\n`);",
+    "language": "typescript"
+  }
+]
