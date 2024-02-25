@@ -19,7 +19,7 @@ export const AppContainer = (config: CodewriterConfig) => {
 		showLineNumbers,
 	} = config;
 	const {fps} = animation;
-	const [duration, setDuration] = useState(10);
+	const [duration, setDuration] = useState(10000);
 	const [theme, setTheme] = React.useState(initialTheme);
 	const dropdownOptions = Object.keys(Theme).map((name) => (
 		<option value={name}>{name}</option>

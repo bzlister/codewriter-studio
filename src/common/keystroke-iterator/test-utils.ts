@@ -7,7 +7,7 @@ export class TestKeystrokeIterator implements IKeystrokeIterator {
 	private _pedantic = false;
 
 	constructor(language: Language, content: string) {
-		this.iter = new KeystrokeIterator(language, content);
+		this.iter = new KeystrokeIterator(language, content, '\r\n');
 	}
 
 	next(): [string, string] | null {

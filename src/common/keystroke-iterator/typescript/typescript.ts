@@ -13,6 +13,8 @@ export const matchGroupsTS: GroupMatcher = groupMatcherFactory([
 			['{', '}'],
 			['[', ']'],
 		]),
+		true,
+		true,
 	],
 	['/**', ' */'],
 	[`'`, `'`, (i, s) => undefined],

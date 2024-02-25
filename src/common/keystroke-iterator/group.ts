@@ -7,6 +7,8 @@ export type Group = {
 	start: string;
 	end: GroupingSymbol;
 	groupMatcherOverride?: GroupMatcher;
+	allowsMultiLineStrings?: boolean;
+	inlineEndToken?: boolean;
 };
 
 const match = (symbol: Token, src: string, at: number) => {
@@ -19,10 +21,13 @@ const match = (symbol: Token, src: string, at: number) => {
 };
 
 export const groupMatcherFactory =
-	(groupingSymbolInfo: [Token, Token, GroupMatcher?][]): GroupMatcher =>
+	(
+		groupingSymbolInfo: [Token, Token, GroupMatcher?, boolean?, boolean?][]
+	): GroupMatcher =>
 	(i: number, src: string) => {
 		let start: string = '';
-		let groupInfo: [Token, Token, GroupMatcher?] | null = null;
+		let groupInfo: [Token, Token, GroupMatcher?, boolean?, boolean?] | null =
+			null;
 		for (let g of groupingSymbolInfo) {
 			const m = match(g[0], src, i);
 			if (m) {
@@ -33,7 +38,8 @@ export const groupMatcherFactory =
 		}
 
 		if (groupInfo) {
-			const [startToken, endToken, fn] = groupInfo;
+			const [startToken, endToken, fn, allowsMultiLineStrings, inlineEndToken] =
+				groupInfo;
 			let end: string = '';
 			let open = 1;
 			let j = i + 1;
@@ -56,7 +62,13 @@ export const groupMatcherFactory =
 			}
 
 			assert(open === 0, `Expected to close group ${src.substring(i)}`);
-			return {start, end: {chars: end, indx: j}, groupMatcherOverride: fn};
+			return {
+				start,
+				end: {chars: end, indx: j},
+				groupMatcherOverride: fn,
+				allowsMultiLineStrings,
+				inlineEndToken,
+			};
 		}
 
 		return undefined;

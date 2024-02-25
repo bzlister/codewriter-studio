@@ -1,6 +1,6 @@
 import {KeystrokeIterator} from '../keystroke-iterator';
 import {TestKeystrokeIterator} from '../test-utils';
-import files from './files.json';
+import * as fs from 'fs';
 
 describe('typescript parser', () => {
 	xit('braces', () => {
@@ -23,7 +23,7 @@ describe('typescript parser', () => {
 
 	xit('` applies different escape conditions', () => {
 		const tsc = '(`"_"`)';
-		const iter = new KeystrokeIterator('typescript', tsc);
+		const iter = new KeystrokeIterator('typescript', tsc, '\r\n');
 		expect(iter.next()).toEqual(['(', ')']);
 		expect(iter.next()).toEqual(['(`', '`)']);
 		expect(iter.next()).toEqual(['(`"', '`)']);
@@ -35,81 +35,44 @@ describe('typescript parser', () => {
 	});
 
 	it('newline', () => {
-		const tsc = files[0].content;
-		const iter = new KeystrokeIterator('typescript', tsc);
+		const tsc = fs.readFileSync(
+			'src/common/keystroke-iterator/typescript/0.txt',
+			'utf-8'
+		);
+		const iter = new KeystrokeIterator('typescript', tsc, '\r\n');
 		advanceUntil(iter, 'const a = ');
 		expect(iter.next()).toEqual(['const a = `', '`']);
-		expect(iter.next()).toEqual(['const a = `\\', '`']);
-		expect(iter.next()).toEqual(['const a = `\\r', '`']);
-		expect(iter.next()).toEqual(['const a = `\\r\\', '`']);
-		expect(iter.next()).toEqual(['const a = `\\r\\n', '`']);
-		expect(iter.next()).toEqual(['const a = `\\r\\n`', '']);
+		expect(iter.next()).toEqual(['const a = `\r\n', '`']);
+		expect(iter.next()).toEqual(['const a = `\r\n`', '']);
+
+		advanceUntil(iter, 'const a = `\r\n`;\r\nconst b = ');
+		expect(iter.next()).toEqual(['const a = `\r\n`;\r\nconst b = `', '`']);
+		expect(iter.next()).toEqual(['const a = `\r\n`;\r\nconst b = `\r\n', '`']);
 
 		advanceUntil(
 			iter,
-			`const a = \`\\\\r\\\\n\`;
-const b = `
+			'const a = `\r\n`;\r\nconst b = `\r\n`;\r\n\r\nconst fn = '
 		);
 		expect(iter.next()).toEqual([
-			`const a = \`\r\n\`;
-const b = \``,
-			'`',
-		]);
-		expect(iter.next()).toEqual([
-			`const a = \`\r\n\`;
-			const b = \`
-			`,
-			'`',
-		]);
-		expect(iter.next()).toEqual([
-			`const a = \`\r\n\`;
-			const b = \`
-			\``,
-			'',
-		]);
-
-		advanceUntil(
-			iter,
-			`const a = \`\r\n\`;
-			const b = \`
-			\`;
-			
-			const fn = `
-		);
-		expect(iter.next()).toEqual([
-			`const a = \`\r\n\`;
-			const b = \`
-			\`;
-			
-			const fn = (`,
+			'const a = `\r\n`;\r\nconst b = `\r\n`;\r\n\r\nconst fn = (',
 			')',
 		]);
-		advanceNTimes(iter, 9);
+		advanceUntil(
+			iter,
+			'const a = `\r\n`;\r\nconst b = `\r\n`;\r\n\r\nconst fn = (s: string'
+		);
 		expect(iter.next()).toEqual([
-			`const a = \`\r\n\`;
-			const b = \`
-			\`;
-			
-			const fn = (s: string)`,
+			'const a = `\r\n`;\r\nconst b = `\r\n`;\r\n\r\nconst fn = (s: string)',
 			'',
 		]);
 
 		advanceNTimes(iter, 4);
 		expect(iter.next()).toEqual([
-			`const a = \`\r\n\`;
-			const b = \`
-			\`;
-			
-			const fn = (s: string) => {`,
+			'const a = `\r\n`;\r\nconst b = `\r\n`;\r\n\r\nconst fn = (s: string) => {',
 			'}',
 		]);
 		expect(iter.next()).toEqual([
-			`const a = \`\r\n\`;
-			const b = \`
-			\`;
-			
-			const fn = (s: string) => {
-				`,
+			'const a = `\r\n`;\r\nconst b = `\r\n`;\r\n\r\nconst fn = (s: string) => {\r\n',
 			'\r\n}',
 		]);
 	});
